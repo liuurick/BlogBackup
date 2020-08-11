@@ -9,13 +9,13 @@ tags: Redis集群
 
 - **哨兵模式**
 
-![img](https://static.oschina.net/uploads/img/201803/29191414_Dwf2.jpg)
+![img](/images/2020073001.jpg)
 
 在redis3.0以前的版本要实现集群一般是借助哨兵sentinel工具来监控master节点的状态，如果master节点异常，则会做主从切换，将某一台slave作为master，哨兵的配置略微复杂，并且性能和高可用性等各方面表现一般，特别是在主从切换的瞬间存在访问瞬断的情况
 <!--more-->
 - **高可用集群模式**
 
-![img](https://static.oschina.net/uploads/space/2018/0330/181526_7mpT_3796575.png)
+![img](/images/2020073002.png)
 
 redis集群是一个由多个主从节点群组成的分布式服务器群，它具有复制、高可用和分片特性。Redis集群不需要sentinel哨兵也能完成节点移除和故障转移的功能。需要将每个节点设置成集群模式，这种集群模式没有中心节点，可水平扩展，据官方文档称可以线性扩展到1000节点。redis集群的性能和高可用性均优于之前版本的哨兵模式，且集群配置非常简单。
 

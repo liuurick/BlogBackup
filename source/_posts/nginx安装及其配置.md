@@ -5,7 +5,6 @@ tags: nginx
 categories: nginx
 ---
 
-<!--more-->
 
 # 1 nginx 介绍
 
@@ -17,7 +16,7 @@ Nginx是一款高性能的http 服务器/反向代理服务器及电子邮件（
 
 并且cpu、内存等资源消耗却非常低，运行非常稳定。
 
- 
+<!--more--> 
 
 ## 2 应用场景
 
