@@ -158,3 +158,21 @@ cluster.initial_master_nodes
 另外两个节点更改一下端口即可
 
 #### 3.启动集群
+
+node1:
+
+![node1](/images/2020101102.png)
+
+node2:
+
+![node2](/images/2020101103.png)
+
+node3:
+
+![node3](/images/2020101104.png)
+
+总览：
+
+![nodes](/images/2020101105.png)
+
+#### 
