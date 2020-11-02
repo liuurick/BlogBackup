@@ -1,6 +1,6 @@
 ---
 title: Java实现分页功能常见的几种方法
-date: 2020-10-25 10:59:11
+date: 2019-2-25 10:59:11
 tags: 分页功能
 categories: Java
 ---
@@ -232,7 +232,7 @@ public ResponseResult selectAllStudent(Integer pageNum, Integer pageSize) {
 }
 ```
 
-详细请看 [SpringBoot集成MyBatis的分页插件PageHelper](https://blog.csdn.net/riemann_/article/details/90454451)
+
 
 ## 五、springData分页
 
