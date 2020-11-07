@@ -4,7 +4,12 @@ date: 2019-07-30 12:05:11
 categories: git常见错误
 tags: git
 ---
+### 
+
+<!--more-->
+
 git push的时候报错：
+
 > ! [rejected]        master -> master (fetch first)
 error: failed to push some refs to 'git@github.com:liuurick/BlogBackup.git'
 hint: Updates were rejected because the remote contains work that you do

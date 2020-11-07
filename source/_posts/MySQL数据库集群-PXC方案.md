@@ -5,6 +5,10 @@ tags: MySQL数据库集群
 categories: [Docker,MySQL集群]
 ---
 
+### 
+
+<!--more-->
+
 常见的集群方案包括：Replication，Percona XtraDB Cluster（PXC）
 
 | Replication                                                  | PXC                                                          |
@@ -15,8 +19,6 @@ categories: [Docker,MySQL集群]
 Replication方案适用于日志，博客这样的网站，存储一些价值较低的内容。
 
 而PXC具备强一致性，数据同步是双向的特点，另外PerconaServer是MySQL改进版，性能提升很大。所以这里我选择的是PXC方案搭建Mysql集群。
-
-<!--more-->
 
 ### 一、搭建准备
 

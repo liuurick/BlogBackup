@@ -4,8 +4,12 @@ date: 2020-08-03 17:41:01
 categories: Ubuntu
 tags: Ubuntu
 ---
-VMware的安装非常简单，就不详细阐述了，这里主要是记录一个罕见的问题。
+### 
+
 <!--more-->
+
+VMware的安装非常简单，就不详细阐述了，这里主要是记录一个罕见的问题。
+
 
 >报错：在解压wmware tools时ubuntu报出没有足够的空间提取的错误
 

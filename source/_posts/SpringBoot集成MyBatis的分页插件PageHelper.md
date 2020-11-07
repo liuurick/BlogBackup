@@ -5,9 +5,13 @@ tags: 分页功能
 categories: [Java,SpringBoot]
 ---
 
-首先说说MyBatis框架的PageHelper插件吧，它是一个非常好用的分页插件，通常我们的项目中如果集成了MyBatis的话，几乎都会用到它，因为分页的业务逻辑说复杂也不复杂，但是有插件我们何乐而不为？通常引入它们只需三步骤，不管是Spring集成还是SpringBoot集成都是老套路，我就分开总结了，望各位笑纳。
+## 
 
 <!--more-->
+
+首先说说MyBatis框架的PageHelper插件吧，它是一个非常好用的分页插件，通常我们的项目中如果集成了MyBatis的话，几乎都会用到它，因为分页的业务逻辑说复杂也不复杂，但是有插件我们何乐而不为？通常引入它们只需三步骤，不管是Spring集成还是SpringBoot集成都是老套路，我就分开总结了，望各位笑纳。
+
+
 
 ## Spring集成PageHelper：
 

@@ -5,6 +5,10 @@ categories: git常见错误
 tags: git
 ---
 
+### 
+
+<!--more-->
+
 git remote add origin git@github.com:liuurick/BlogBackup.git
 
 git remote -v

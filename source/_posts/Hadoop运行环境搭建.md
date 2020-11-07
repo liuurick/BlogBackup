@@ -4,11 +4,15 @@ date: 2020-03-27 08:27:00
 tags: Hadoop
 categories: Hadoop集群
 ---
+### 
+
+<!--more-->
+
 ### 电脑配置要求：
+
 内存：最低8G，最好16G以上
 硬盘：预留100G，实际上不妨数据大概不会超过20G
 
-<!--more-->
 ### 系统环境：
 Windows环境：Windows10
 Linux环境：CentOS-6.10-x86_64-bin-DVD1

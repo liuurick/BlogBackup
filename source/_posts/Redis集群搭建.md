@@ -5,6 +5,10 @@ categories: Redis集群
 tags: Redis集群
 ---
 
+### 
+
+<!--more-->
+
 ### 1、Redis集群方案比较
 
 - **哨兵模式**
@@ -12,7 +16,7 @@ tags: Redis集群
 ![img](/images/2020073001.jpg)
 
 在redis3.0以前的版本要实现集群一般是借助哨兵sentinel工具来监控master节点的状态，如果master节点异常，则会做主从切换，将某一台slave作为master，哨兵的配置略微复杂，并且性能和高可用性等各方面表现一般，特别是在主从切换的瞬间存在访问瞬断的情况
-<!--more-->
+
 - **高可用集群模式**
 
 ![img](/images/2020073002.png)
