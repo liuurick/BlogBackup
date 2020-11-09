@@ -82,7 +82,6 @@ public List findByHqlPage(int[] startIdAndCount) throws Exception {
 ## 三、截取List查询结果分页(简单粗暴)
 
 ```java
-...
 List<StudentEnroll> students = studentlDao.getAllStudents();
 int count = 0;
 if(studentEnrolls != null && studentEnrolls.size() > 0) {
@@ -93,7 +92,7 @@ if(studentEnrolls != null && studentEnrolls.size() > 0) {
 		toIndex = count;
 	}
 	List<StudentEnroll> pageList = studentEnrolls.subList(fromIndex, toIndex);
-...
+
 ```
 
 ## 四、mybatis框架pageHelper插件分页
@@ -239,7 +238,6 @@ public ResponseResult selectAllStudent(Integer pageNum, Integer pageSize) {
 service层
 
 ```java
-...
 Sort.Order travelDate = new Sort.Order(Sort.Direction.DESC, "travelDate");
 Sort.Order createdTime = new Sort.Order(Sort.Direction.DESC, "createdTime");
 Sort sort = new Sort(travelDate, createdTime);
@@ -250,7 +248,6 @@ try {
 } catch (Exception e) {
     throw new DatabaseRelatedException("TravelRepository异常");
 }
- ...
 ```
 
 dao层：接口继承的是PagingAndSortingRepository接口，注意要加@Repository注解
