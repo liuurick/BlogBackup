@@ -107,13 +107,13 @@ vrrp_instance  VI_1 {
 
 #### 2.3 全量数据热备份
 
-1.创建数据券
+1.创建数据卷
 
 ```undefined
 docker volume create backup
 ```
 
-2.选择数据节点映射数据券
+2.选择数据节点映射数据卷
 
 ​	先停止节点
 
@@ -162,7 +162,7 @@ innobackupex --user=root --password=123456 /data/backup/full
 /data/backup/full
 退出容器
 exit
-查看数据券目录
+查看数据卷目录
 docker inspect backup
 进入备份目录
 ```

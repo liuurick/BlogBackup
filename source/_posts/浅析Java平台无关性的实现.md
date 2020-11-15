@@ -1,8 +1,8 @@
 ---
 title: 浅析Java平台无关性的实现
 date: 2020-10-22 21:45:23
-tags: Java
-categories: [Java,JVM]
+tags: [Java,JVM]
+categories: Java
 ---
 
 ### 

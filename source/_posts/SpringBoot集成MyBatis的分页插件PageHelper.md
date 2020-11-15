@@ -1,8 +1,8 @@
 ---
 title: SpringBoot集成MyBatis的分页插件PageHelper
 date: 2020-10-25 11:11:35
-tags: 分页功能
-categories: [Java,SpringBoot]
+tags: [Java,SpringBoot]
+categories: 分页功能
 ---
 
 ## 
