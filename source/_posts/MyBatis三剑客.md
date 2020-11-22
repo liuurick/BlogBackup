@@ -350,7 +350,7 @@ mybatis-generator是一款流行的自动代码生成工具。
 
 mybatis-plugin是需要购买授权的，这里我推荐MyBatisX
 
-![image-20201119203540933](C:\Users\admin\Desktop\blog\source\images\2020111904.png)
+![image-20201119203540933](/images/2020111904.png)
 
 
 
