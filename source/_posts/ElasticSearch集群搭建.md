@@ -1,8 +1,8 @@
 ---
 title: ElasticSearch集群搭建
 date: 2020-10-11 10:55:50
-tags: ElasticSearch
-categories: ElasticSearch集群
+tags: ElasticSearch集群
+categories: ElasticSearch
 ---
 
 ElasticSearch诞生于2010年，它采用的是分布式模式，这也印证了它名字中的“elastic”。谈到分布式，当然离不开集群，这里记录一下自己搭建集群的经验。

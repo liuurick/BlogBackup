@@ -2,7 +2,7 @@
 title: Redis集群搭建
 date: 2020-07-30 09:37:05
 categories: Redis集群
-tags: Redis集群
+tags: Redis
 ---
 
 ### 

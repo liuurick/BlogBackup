@@ -2,7 +2,7 @@
 title: PXC方案的一些改进
 date: 2020-11-09 21:35:39
 tags: [Docker,MySQL集群]
-categories: MySQL集群
+categories: MySQL
 ---
 
 之前MySQL集群搭建使用的是PXC方案，最后想想还是有很多地方需要改进：

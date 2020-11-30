@@ -119,7 +119,7 @@ Spring整合：
         <!-- 注册加载myBatis映射文件 -->
         <property name="mapperLocations">
             <array>
-                <value>classpath*:com/yyz/mapper/*Mapper.xml</value>
+                <value>classpath*:com/liuurick/mapper/*Mapper.xml</value>
             </array>
         </property>
         <!-- PageHelper分页配置 -->
@@ -147,7 +147,7 @@ Spring整合：
             </array>
         </property>
         <!-- 给数据库实体起别名 -->
-        <property name="typeAliasesPackage" value="com.yyz.entity;"/>
+        <property name="typeAliasesPackage" value="com.liuurick.entity;"/>
  </bean>
 ```
 

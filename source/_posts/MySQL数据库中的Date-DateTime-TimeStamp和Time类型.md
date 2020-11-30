@@ -1,7 +1,7 @@
 ---
 title: 'MySQL数据库中的Date,DateTime,TimeStamp和Time类型'
 date: 2020-11-18 19:52:52
-tags: MySQL
+tags: MySQL日期类型
 categories: MySQL
 ---
 

@@ -38,7 +38,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 
     <!-- 批量设置别名(可以不配) 作用：就是在mapper.xml文件中直接写类名，也可以不用写全路径名。 -->
     <typeAliases>
-        <package name="cn.e3mall.manager.po" />
+        <package name="com.liuurick.manager.po" />
     </typeAliases>
 
     <!-- 配置mybatis的分页插件PageHelper -->

@@ -1,7 +1,7 @@
 ---
 title: MyBatis三剑客
 date: 2020-11-19 19:35:34
-tags: MyBatis
+tags: [Mybatis-generator,Mybatis-plugin,Mybatis-PageHelper]
 categories: MyBatis
 ---
 

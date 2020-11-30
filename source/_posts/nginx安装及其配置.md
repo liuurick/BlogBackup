@@ -5,7 +5,7 @@ tags: nginx
 categories: nginx
 ---
 
-# 
+nginx安装及其配置
 
 <!--more-->
 

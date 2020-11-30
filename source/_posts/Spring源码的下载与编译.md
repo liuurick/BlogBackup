@@ -1,8 +1,8 @@
 ---
 title: Spring源码的下载与编译
 date: 2020-10-19 19:13:57
-tags: Spring
-categories: Spring源码
+tags: Spring源码
+categories: Spring
 ---
 Spring学了很久了，但是一直没有深入到源码，希望在接下来的源码学习中有所收获。。。
 <!--more-->

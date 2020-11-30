@@ -1,8 +1,8 @@
 ---
 title: SpringBoot启动时找不到或无法加载主类
 date: 2020-10-06 22:48:11
-tags: SpringBoot
-categories: SpringBoot错误
+tags: SpringBoot错误
+categories: SpringBoot
 ---
 ### 
 

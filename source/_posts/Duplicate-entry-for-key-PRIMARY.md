@@ -1,8 +1,8 @@
 ---
 title: Duplicate entry for key 'PRIMARY'
 date: 2020-08-14 18:08:48
-tags: mysql错误
-categories: mysql报错汇总
+tags: MySQL错误
+categories: MySQL
 ---
 
 在执行数据库插入语句时，遇到一个比较罕见的错误，记录一下

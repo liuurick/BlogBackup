@@ -1,8 +1,8 @@
 ---
 title: Hadoop集群搭建
 date: 2020-03-28 08:27:00
-tags: Hadoop
-categories: Hadoop集群
+tags: Hadoop集群
+categories: Hadoop
 ---
 >Hadoop集群搭建之前记得完成hadoop运行环境的搭建
 

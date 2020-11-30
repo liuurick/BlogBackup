@@ -2,7 +2,7 @@
 xmltitle: MySQL集群-PXC方案
 date: 2020-8-21 20:24:44
 tags: [MySQL集群,Docker]
-categories: [MySQL集群]
+categories: MySQL
 ---
 
 ### 
