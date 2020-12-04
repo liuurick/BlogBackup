@@ -9,11 +9,11 @@ categories: Java
 
 <!--more-->
 
-sql尝试
+# sql尝试
 
 先建立一个表
 
-```
+```sql
 CREATE TABLE `test` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -25,11 +25,21 @@ CREATE TABLE `test` (
 
 
 
+```
+select * FROM test
+ORDER BY id
+LIMIT 3,3
+```
 
 
 
 
-## 一、limit关键字
+
+
+
+
+
+一、limit关键字
 
 **service层**
 

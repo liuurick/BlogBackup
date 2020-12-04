@@ -1,9 +1,13 @@
 ---
-title: MySQL主从复制
+title: （转）MySQL主从复制
 date: 2020-11-30 20:51:32
 tags: MySQL主从复制
 categories: MySQL
 ---
+
+MySQL主从复制笔记
+
+<!--more-->
 
 ### MySQL Replication
 
@@ -22,7 +26,7 @@ MySQL中复制的优点包括：
 
 #### Replication 的原理
 
-![img](https:////upload-images.jianshu.io/upload_images/11414906-1e1d8aaa7a86af96.png?imageMogr2/auto-orient/strip|imageView2/2/w/799/format/webp)
+![img](/images/2020120301.png)
 
 image.png
 
@@ -55,7 +59,9 @@ image.png
 
 ![img](https:////upload-images.jianshu.io/upload_images/11414906-5e787d256338774f.png?imageMogr2/auto-orient/strip|imageView2/2/w/946/format/webp)
 
-image.png
+
+
+
 
 #### 关于二进制日志
 
