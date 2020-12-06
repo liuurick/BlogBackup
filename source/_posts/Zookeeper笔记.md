@@ -7,6 +7,8 @@ categories: Zookeeper
 
 Zookeeper知识点总结
 
+<!--more-->
+
 ## Zookeeper概述
 
 Zookeeper是一个开源的分布式的，为分布式应用提供协调服务的Apache项目。Zookeeper是基于分

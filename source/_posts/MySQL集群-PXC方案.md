@@ -5,11 +5,9 @@ tags: [MySQL集群,Docker]
 categories: MySQL
 ---
 
-### 
+常见的集群方案包括：Replication，Percona XtraDB Cluster（PXC）
 
 <!--more-->
-
-常见的集群方案包括：Replication，Percona XtraDB Cluster（PXC）
 
 | Replication                                                  | PXC                                                          |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
