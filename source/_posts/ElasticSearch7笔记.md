@@ -1,11 +1,11 @@
 ---
-title: ElasticSearch笔记
+title: ElasticSearch7笔记
 date: 2020-12-02 19:55:02
 tags: ElasticSearch
 categories: ElasticSearch
 ---
 
-ElasticSearch学习笔记
+ElasticSearch7学习笔记
 
 <!--more-->
 

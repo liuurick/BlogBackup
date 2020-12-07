@@ -44,3 +44,8 @@ git bash输出
 
 git pull --rebase origin master
 最后提交：`git push origin master`
+
+**下次遇到这样的问题，记得检查.gitignore和README.md文件**
+
+
+
