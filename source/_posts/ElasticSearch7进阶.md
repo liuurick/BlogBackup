@@ -1,13 +1,13 @@
 ---
 title: ElasticSearch7进阶
 date: 2020-12-06 11:10:05
-tags: ElasticSearch
+tags: ElasticSearch7
 categories: ElasticSearch
 ---
 
 ElasticSearch的进阶学习主要有两种分别是通读文档和案例学习。这里我选择的是通过案例来深入学习es。
 
-案例数据选择的是tmdb网站的开源数据。
+案例数据选择的是tmdb网站的公开数据。
 
 <!--more-->
 
@@ -1031,7 +1031,9 @@ GET /movie/_search
 
 ![image-20201206201041743](/images/2020120601.png)
 
-多字段查询索引内有query分词后的结果，因为title比overview命中更重要，因此需要加权重
+多字段查询索引内有query分词后的结果，因为title比overview命中更重要，因此需要加权重。
+
+### 6.多字段查询优化
 
 ```
 GET /movie/_search
@@ -1070,95 +1072,997 @@ GET /movie/_search
 
 
 
-# 
+## 继续深入查询
+
+### 1.bool查询
+
+>must：必须都是true
+>
+>must not： 必须都是false
+>
+>should：其中有一个为true即可，但true的越多得分越高
 
 
+
+```
+GET /movie/_search
+{
+ "query":{
+  "bool": { 
+   "should": [
+    { "match": { "title":"basketball with cartoom aliens"}}, 
+
+    { "match": { "overview":"basketball with cartoom aliens"}} 
+   ]
+  }
+ }
+}
+```
+
+
+
+查询结果：
+
+```
+{
+  "took" : 23,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 103,
+      "relation" : "eq"
+    },
+    "max_score" : 14.092542,
+    "hits" : [
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "2550",
+        "_score" : 14.092542,
+        "_source" : {
+          "title" : "Love & Basketball",
+          "tagline" : "All's fair in love and basketball.",
+          "release_date" : "2000/4/21",
+          "popularity" : "2.027393",
+          "cast" : {
+            "character" : "Laurie Strode",
+            "name" : "Jamie Lee Curtis"
+          },
+          "overview" : "A young African-American couple navigates the tricky paths of romance and athletics in this drama. Quincy McCall (Omar Epps) and Monica Wright (Sanaa Lathan) grew up in the same neighborhood and have known each other since childhood. As they grow into adulthood, they fall in love, but they also share another all-consuming passion: basketball. They've followed the game all their lives and have no small amount of talent on the court. As Quincy and Monica struggle to make their relationship work, they follow separate career paths though high school and college basketball and, they hope, into stardom in big-league professional ball."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "2389",
+        "_score" : 11.687689,
+        "_source" : {
+          "title" : "Aliens",
+          "tagline" : "This Time It's War",
+          "release_date" : "1986/7/18",
+          "popularity" : "67.66094",
+          "cast" : {
+            "character" : "Conner",
+            "name" : "Jason Momoa"
+          },
+          "overview" : "When Ripley's lifepod is found by a salvage crew over 50 years later, she finds that terra-formers are on the very planet they found the alien species. When the company sends a family of colonists out to investigate her story, all contact is lost with the planet and colonists. They enlist Ripley and the colonial marines to return and search for answers."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "1087",
+        "_score" : 11.652669,
+        "_source" : {
+          "title" : "Aliens in the Attic",
+          "tagline" : "The aliens vs. the Pearsons",
+          "release_date" : "2009/7/31",
+          "popularity" : "13.707183",
+          "cast" : {
+            "character" : "Hova",
+            "name" : "Julia Roberts"
+          },
+          "overview" : "It's summer vacation, but the Pearson family kids are stuck at a boring lake house with their nerdy parents. That is until feisty, little, green aliens crash-land on the roof, with plans to conquer the house AND Earth! Using only their wits, courage and video game-playing skills, the youngsters must band together to defeat the aliens and save the world - but the toughest part might be keeping the whole thing a secret from their parents! Featuring an all-star cast including Ashley Tisdale, Andy Richter, Kevin Nealon, Tim Meadows and Doris Roberts, Aliens In The Attic is the most fun you can have on this planet!"
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "839",
+        "_score" : 11.450155,
+        "_source" : {
+          "title" : "Alien³",
+          "tagline" : "The bitch is back.",
+          "release_date" : "1992/5/22",
+          "popularity" : "45.856409",
+          "cast" : {
+            "character" : "Beatrix 'The Bride' Kiddo",
+            "name" : "Uma Thurman"
+          },
+          "overview" : "After escaping with Newt and Hicks from the alien planet, Ripley crash lands on Fiorina 161, a prison planet and host to a correctional facility. Unfortunately, although Newt and Hicks do not survive the crash, a more unwelcome visitor does. The prison does not allow weapons of any kind, and with aid being a long time away, the prisoners must simply survive in any way they can."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "3144",
+        "_score" : 11.37727,
+        "_source" : {
+          "title" : "Alien",
+          "tagline" : "In space no one can hear you scream.",
+          "release_date" : "1979/5/25",
+          "popularity" : "94.184658",
+          "cast" : {
+            "character" : "Raimunda",
+            "name" : "Penu00e9lope Cruz"
+          },
+          "overview" : "During its return to the earth, commercial spaceship Nostromo intercepts a distress signal from a distant planet. When a three-member team of the crew discovers a chamber containing thousands of eggs on the planet, a creature inside one of the eggs attacks an explorer. The entire crew is unaware of the impending nightmare set to descend upon them when the alien parasite planted inside its unfortunate host is birthed."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "1214",
+        "_score" : 10.803101,
+        "_source" : {
+          "title" : "Aliens vs Predator: Requiem",
+          "tagline" : "The Last Place On Earth We Want To Be Is In The Middle",
+          "release_date" : "2007/12/25",
+          "popularity" : "39.381913",
+          "cast" : {
+            "character" : "Alex Wyler",
+            "name" : "Keanu Reeves"
+          },
+          "overview" : "A sequel to 2004's Alien vs. Predator, the iconic creatures from two of the scariest film franchises in movie history wage their most brutal battle ever - in our own backyard. The small town of Gunnison, Colorado becomes a war zone between two of the deadliest extra-terrestrial life forms - the Alien and the Predator. When a Predator scout ship crash-lands in the hills outside the town, Alien Facehuggers and a hybrid Alien/Predator are released and begin to terrorize the town."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "741",
+        "_score" : 10.5949,
+        "_source" : {
+          "title" : "Alien: Resurrection",
+          "tagline" : "It's already too late.",
+          "release_date" : "1997/11/12",
+          "popularity" : "37.44963",
+          "cast" : {
+            "character" : "Jennings",
+            "name" : "Ben Affleck"
+          },
+          "overview" : "Two hundred years after Lt. Ripley died, a group of scientists clone her, hoping to breed the ultimate weapon. But the new Ripley is full of surprises �� as are the new aliens. Ripley must team with a band of smugglers to keep the creatures from reaching Earth."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "1740",
+        "_score" : 9.010006,
+        "_source" : {
+          "title" : "How to Lose Friends & Alienate People",
+          "tagline" : "He's across the pond, and out of his depth.",
+          "release_date" : "2008/10/2",
+          "popularity" : "16.785866",
+          "cast" : {
+            "character" : "Narrator",
+            "name" : "Philippe Labro"
+          },
+          "overview" : """A British writer struggles to fit in at a high-profile magazine in New York. Based on Toby Young's memoir "How to Lose Friends &amp; Alienate People"."""
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "453",
+        "_score" : 8.579647,
+        "_source" : {
+          "title" : "Space Jam",
+          "tagline" : "Get ready to jam.",
+          "release_date" : "1996/11/15",
+          "popularity" : "36.125715",
+          "cast" : {
+            "character" : "Cameron Poe",
+            "name" : "Nicolas Cage"
+          },
+          "overview" : "In a desperate attempt to win a basketball match and earn their freedom, the Looney Tunes seek the aid of retired basketball champion, Michael Jordan."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "2842",
+        "_score" : 7.242802,
+        "_source" : {
+          "title" : "Just Wright",
+          "tagline" : "In this game every shot counts.",
+          "release_date" : "2010/5/14",
+          "popularity" : "10.409253",
+          "cast" : {
+            "character" : "Quentin Jacobsen",
+            "name" : "Nat Wolff"
+          },
+          "overview" : "A physical therapist falls for the basketball player she is helping recover from a career-threatening injury."
+        }
+      }
+    ]
+  }
+}
+```
+
+ 
+
+ 
+
+### 2.不同的multi_query的type
+
+和multi_match得分不一样
+
+因为multi_match有很多种type
+
+best_fields:默认，取得分最高的作为对应的分数，最匹配模式,等同于dismax模式
+
+```
+GET /movie/_search
+
+{
+ "query":{
+  "dis_max": { 
+   "queries": [
+    { "match": { "title":"basketball with cartoom aliens"}}, 
+    { "match": { "overview":"basketball with cartoom aliens"}} 
+   ]
+  }
+ }
+}
+```
+
+
+
+查询结果：
+
+```
+{
+  "took" : 3,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 4512,
+      "relation" : "eq"
+    },
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Avatar",
+          "tagline" : "Enter the World of Pandora.",
+          "release_date" : "2009/12/10",
+          "popularity" : "150.437577",
+          "cast" : {
+            "character" : "Jake Sully",
+            "name" : "Sam Worthington"
+          },
+          "overview" : "In the 22nd century, a paraplegic Marine is dispatched to the moon Pandora on a unique mission, but becomes torn between following orders and protecting an alien civilization."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "3",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Spectre",
+          "tagline" : "A Plan No One Escapes",
+          "release_date" : "2015/10/26",
+          "popularity" : "107.376788",
+          "cast" : {
+            "character" : "James Bond",
+            "name" : "Daniel Craig"
+          },
+          "overview" : "A cryptic message from Bond��s past sends him on a trail to uncover a sinister organization. While M battles political forces to keep the secret service alive, Bond peels back the layers of deceit to reveal the terrible truth behind SPECTRE."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "4",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "The Dark Knight Rises",
+          "tagline" : "The Legend Ends",
+          "release_date" : "2012/7/16",
+          "popularity" : "112.31295",
+          "cast" : {
+            "character" : "Bruce Wayne / Batman",
+            "name" : "Christian Bale"
+          },
+          "overview" : "Following the death of District Attorney Harvey Dent, Batman assumes responsibility for Dent's crimes to protect the late attorney's reputation and is subsequently hunted by the Gotham City Police Department. Eight years later, Batman encounters the mysterious Selina Kyle and the villainous Bane, a new terrorist leader who overwhelms Gotham's finest. The Dark Knight resurfaces to protect a city that has branded him an enemy."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "5",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "John Carter",
+          "tagline" : "Lost in our world, found in another.",
+          "release_date" : "2012/3/7",
+          "popularity" : "43.926995",
+          "cast" : {
+            "character" : "John Carter",
+            "name" : "Taylor Kitsch"
+          },
+          "overview" : "John Carter is a war-weary, former military captain who's inexplicably transported to the mysterious and exotic planet of Barsoom (Mars) and reluctantly becomes embroiled in an epic conflict. It's a world on the brink of collapse, and Carter rediscovers his humanity when he realizes the survival of Barsoom and its people rests in his hands."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "6",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Spider-Man 3",
+          "tagline" : "The battle within.",
+          "release_date" : "2007/5/1",
+          "popularity" : "115.699814",
+          "cast" : {
+            "character" : "Peter Parker / Spider-Man",
+            "name" : "Tobey Maguire"
+          },
+          "overview" : "The seemingly invincible Spider-Man goes up against an all-new crop of villain �� including the shape-shifting Sandman. While Spider-Man��s superpowers are altered by an alien organism, his alter ego, Peter Parker, deals with nemesis Eddie Brock and also gets caught up in a love triangle."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "7",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Tangled",
+          "tagline" : "They're taking adventure to new lengths.",
+          "release_date" : "2010/11/24",
+          "popularity" : "48.681969",
+          "cast" : {
+            "character" : "Flynn Rider (voice)",
+            "name" : "Zachary Levi"
+          },
+          "overview" : "When the kingdom's most wanted-and most charming-bandit Flynn Rider hides out in a mysterious tower, he's taken hostage by Rapunzel, a beautiful and feisty tower-bound teen with 70 feet of magical, golden hair. Flynn's curious captor, who's looking for her ticket out of the tower where she's been locked away for years, strikes a deal with the handsome thief and the unlikely duo sets off on an action-packed escapade, complete with a super-cop horse, an over-protective chameleon and a gruff gang of pub thugs."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "8",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Avengers: Age of Ultron",
+          "tagline" : "A New Age Has Come.",
+          "release_date" : "2015/4/22",
+          "popularity" : "134.279229",
+          "cast" : {
+            "character" : "Tony Stark / Iron Man",
+            "name" : "Robert Downey Jr."
+          },
+          "overview" : "When Tony Stark tries to jumpstart a dormant peacekeeping program, things go awry and Earth��s Mightiest Heroes are put to the ultimate test as the fate of the planet hangs in the balance. As the villainous Ultron emerges, it is up to The Avengers to stop him from enacting his terrible plans, and soon uneasy alliances and unexpected action pave the way for an epic and unique global adventure."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "9",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Harry Potter and the Half-Blood Prince",
+          "tagline" : "Dark Secrets Revealed",
+          "release_date" : "2009/7/7",
+          "popularity" : "98.885637",
+          "cast" : {
+            "character" : "Harry Potter",
+            "name" : "Daniel Radcliffe"
+          },
+          "overview" : "As Harry begins his sixth year at Hogwarts, he discovers an old book marked as 'Property of the Half-Blood Prince', and begins to learn more about Lord Voldemort's dark past."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "10",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Batman v Superman: Dawn of Justice",
+          "tagline" : "Justice or revenge",
+          "release_date" : "2016/3/23",
+          "popularity" : "155.790452",
+          "cast" : {
+            "character" : "Bruce Wayne / Batman",
+            "name" : "Ben Affleck"
+          },
+          "overview" : "Fearing the actions of a god-like Super Hero left unchecked, Gotham City��s own formidable, forceful vigilante takes on Metropolis��s most revered, modern-day savior, while the world wrestles with what sort of hero it really needs. And with Batman and Superman at war with one another, a new threat quickly arises, putting mankind in greater danger than it��s ever known before."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "11",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Superman Returns",
+          "tagline" : "",
+          "release_date" : "2006/6/28",
+          "popularity" : "57.925623",
+          "cast" : {
+            "character" : "Superman / Clark Kent",
+            "name" : "Brandon Routh"
+          },
+          "overview" : "Superman returns to discover his 5-year absence has allowed Lex Luthor to walk free, and that those he was closest too felt abandoned and have moved on. Luthor plots his ultimate revenge that could see millions killed and change the face of the planet forever, as well as ridding himself of the Man of Steel."
+        }
+      }
+    ]
+  }
+}
+```
+
+
+
+然后使用explan看下 ((title:steve title:job) | (overview:steve overview:job))，打分规则
+
+```
+GET /movie/_validate/query?explain
+{
+ "query":{
+  "multi_match":{
+   "query":"steve job",
+   "fields":["title","overview"],
+   "operator": "or",
+   "type":"best_fields"
+  }
+ }
+}
+```
+
+
+
+查询结果：
+
+```
+{
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "valid" : true,
+  "explanations" : [
+    {
+      "index" : "movie",
+      "valid" : true,
+      "explanation" : "((overview:steve overview:job) | (title:steve title:job))"
+    }
+  ]
+}
+```
+
+
+
+以字段为单位分别计算分词的分数，然后取最好的一个,适用于最优字段匹配。
+
+ 
+
+ 
+
+将其他因素以0.3的倍数考虑进去
+
+```
+GET /movie/_search
+{
+ "query":{
+  "dis_max": { 
+   "queries": [
+    { "match": { "title":"basketball with cartoom aliens"}}, 
+    { "match": { "overview":"basketball with cartoom aliens"}} 
+   ],
+   "tie_breaker": 0.3
+  }
+ }
+}
+```
+
+
+
+ 查询结果：
+
+```
+{
+  "took" : 10,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 103,
+      "relation" : "eq"
+    },
+    "max_score" : 10.023938,
+    "hits" : [
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "2550",
+        "_score" : 10.023938,
+        "_source" : {
+          "title" : "Love & Basketball",
+          "tagline" : "All's fair in love and basketball.",
+          "release_date" : "2000/4/21",
+          "popularity" : "2.027393",
+          "cast" : {
+            "character" : "Laurie Strode",
+            "name" : "Jamie Lee Curtis"
+          },
+          "overview" : "A young African-American couple navigates the tricky paths of romance and athletics in this drama. Quincy McCall (Omar Epps) and Monica Wright (Sanaa Lathan) grew up in the same neighborhood and have known each other since childhood. As they grow into adulthood, they fall in love, but they also share another all-consuming passion: basketball. They've followed the game all their lives and have no small amount of talent on the court. As Quincy and Monica struggle to make their relationship work, they follow separate career paths though high school and college basketball and, they hope, into stardom in big-league professional ball."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "2389",
+        "_score" : 8.952852,
+        "_source" : {
+          "title" : "Aliens",
+          "tagline" : "This Time It's War",
+          "release_date" : "1986/7/18",
+          "popularity" : "67.66094",
+          "cast" : {
+            "character" : "Conner",
+            "name" : "Jason Momoa"
+          },
+          "overview" : "When Ripley's lifepod is found by a salvage crew over 50 years later, she finds that terra-formers are on the very planet they found the alien species. When the company sends a family of colonists out to investigate her story, all contact is lost with the planet and colonists. They enlist Ripley and the colonial marines to return and search for answers."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "839",
+        "_score" : 8.881593,
+        "_source" : {
+          "title" : "Alien³",
+          "tagline" : "The bitch is back.",
+          "release_date" : "1992/5/22",
+          "popularity" : "45.856409",
+          "cast" : {
+            "character" : "Beatrix 'The Bride' Kiddo",
+            "name" : "Uma Thurman"
+          },
+          "overview" : "After escaping with Newt and Hicks from the alien planet, Ripley crash lands on Fiorina 161, a prison planet and host to a correctional facility. Unfortunately, although Newt and Hicks do not survive the crash, a more unwelcome visitor does. The prison does not allow weapons of any kind, and with aid being a long time away, the prisoners must simply survive in any way they can."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "3144",
+        "_score" : 8.859726,
+        "_source" : {
+          "title" : "Alien",
+          "tagline" : "In space no one can hear you scream.",
+          "release_date" : "1979/5/25",
+          "popularity" : "94.184658",
+          "cast" : {
+            "character" : "Raimunda",
+            "name" : "Penu00e9lope Cruz"
+          },
+          "overview" : "During its return to the earth, commercial spaceship Nostromo intercepts a distress signal from a distant planet. When a three-member team of the crew discovers a chamber containing thousands of eggs on the planet, a creature inside one of the eggs attacks an explorer. The entire crew is unaware of the impending nightmare set to descend upon them when the alien parasite planted inside its unfortunate host is birthed."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "453",
+        "_score" : 8.579647,
+        "_source" : {
+          "title" : "Space Jam",
+          "tagline" : "Get ready to jam.",
+          "release_date" : "1996/11/15",
+          "popularity" : "36.125715",
+          "cast" : {
+            "character" : "Cameron Poe",
+            "name" : "Nicolas Cage"
+          },
+          "overview" : "In a desperate attempt to win a basketball match and earn their freedom, the Looney Tunes seek the aid of retired basketball champion, Michael Jordan."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "1087",
+        "_score" : 7.8832817,
+        "_source" : {
+          "title" : "Aliens in the Attic",
+          "tagline" : "The aliens vs. the Pearsons",
+          "release_date" : "2009/7/31",
+          "popularity" : "13.707183",
+          "cast" : {
+            "character" : "Hova",
+            "name" : "Julia Roberts"
+          },
+          "overview" : "It's summer vacation, but the Pearson family kids are stuck at a boring lake house with their nerdy parents. That is until feisty, little, green aliens crash-land on the roof, with plans to conquer the house AND Earth! Using only their wits, courage and video game-playing skills, the youngsters must band together to defeat the aliens and save the world - but the toughest part might be keeping the whole thing a secret from their parents! Featuring an all-star cast including Ashley Tisdale, Andy Richter, Kevin Nealon, Tim Meadows and Doris Roberts, Aliens In The Attic is the most fun you can have on this planet!"
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "1214",
+        "_score" : 7.644126,
+        "_source" : {
+          "title" : "Aliens vs Predator: Requiem",
+          "tagline" : "The Last Place On Earth We Want To Be Is In The Middle",
+          "release_date" : "2007/12/25",
+          "popularity" : "39.381913",
+          "cast" : {
+            "character" : "Alex Wyler",
+            "name" : "Keanu Reeves"
+          },
+          "overview" : "A sequel to 2004's Alien vs. Predator, the iconic creatures from two of the scariest film franchises in movie history wage their most brutal battle ever - in our own backyard. The small town of Gunnison, Colorado becomes a war zone between two of the deadliest extra-terrestrial life forms - the Alien and the Predator. When a Predator scout ship crash-lands in the hills outside the town, Alien Facehuggers and a hybrid Alien/Predator are released and begin to terrorize the town."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "741",
+        "_score" : 7.5659513,
+        "_source" : {
+          "title" : "Alien: Resurrection",
+          "tagline" : "It's already too late.",
+          "release_date" : "1997/11/12",
+          "popularity" : "37.44963",
+          "cast" : {
+            "character" : "Jennings",
+            "name" : "Ben Affleck"
+          },
+          "overview" : "Two hundred years after Lt. Ripley died, a group of scientists clone her, hoping to breed the ultimate weapon. But the new Ripley is full of surprises �� as are the new aliens. Ripley must team with a band of smugglers to keep the creatures from reaching Earth."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "2842",
+        "_score" : 7.242802,
+        "_source" : {
+          "title" : "Just Wright",
+          "tagline" : "In this game every shot counts.",
+          "release_date" : "2010/5/14",
+          "popularity" : "10.409253",
+          "cast" : {
+            "character" : "Quentin Jacobsen",
+            "name" : "Nat Wolff"
+          },
+          "overview" : "A physical therapist falls for the basketball player she is helping recover from a career-threatening injury."
+        }
+      },
+      {
+        "_index" : "movie",
+        "_type" : "_doc",
+        "_id" : "1890",
+        "_score" : 6.92179,
+        "_source" : {
+          "title" : "He Got Game",
+          "tagline" : "The father, the son and the holy game.",
+          "release_date" : "1998/5/1",
+          "popularity" : "10.232599",
+          "cast" : {
+            "character" : "Megan",
+            "name" : "Shoshana Bush"
+          },
+          "overview" : "A basketball player's father must try to convince him to go to a college so he can get a shorter sentence."
+        }
+      }
+    ]
+  }
+}
+```
+
+most_fields:取命中的分值相加作为分数，同should match模式，加权共同影响模式
+
+ 
+
+然后使用explain看下 ((title:steve title:job) | (overview:steve overview:job))~1.0，打分规则
+
+```
+GET /movie/_validate/query?explain
+{
+ "query":{
+  "multi_match":{
+   "query":"steve job",
+   "fields":["title","overview"],
+   "operator": "or",
+   "type":"most_fields"
+  }
+ }
+}
+```
+
+
+
+查询结果：
+
+```
+{
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "valid" : true,
+  "explanations" : [
+    {
+      "index" : "movie",
+      "valid" : true,
+      "explanation" : "((overview:steve overview:job) | (title:steve title:job))~1.0"
+    }
+  ]
+}
+```
+
+
+
+以字段为单位分别计算分词的分数，然后加在一起，适用于都有影响的匹配
+
+cross_fields:以分词为单位计算栏位总分
+
+然后使用explain看下 blended(terms:[title:steve, overview:steve]) blended(terms:[title:job, overview:job])，打分规则
+
+```
+GET /movie/_validate/query?explain
+{
+ //"explain": true, 
+ "query":{
+  "multi_match":{
+   "query":"steve job",
+   "fields":["title","overview"],
+   "operator": "or",
+   "type":"most_fields"
+  }
+ }
+}
+```
+
+
+
+以词为单位，分别用词去不同的字段内取内容，拿高的分数后与其他词的分数相加，适用于词导向的匹配
+
+```
+GET /forum/article/_search
+{
+ "query": {
+  "multi_match": {
+   "query": "Peter Smith",
+   "type": "cross_fields", 
+   "operator": "or",
+   "fields": ["author_first_name", "author_last_name"]
+  }
+ }
+}
+```
+
+
+
+> 要求Peter必须在author_first_name或author_last_name中出现
+>
+> 要求Smith必须在author_first_name或author_last_name中出
+>
+> 原来most_fiels，可能像Smith //Williams也可能会出现，因为most_fields要求只是任何一个field匹配了就可以，匹配的field越多，分数越高
+
+ ```
+GET /movie/_search
+{
+ "explain": true, 
+ "query":{
+  "multi_match":{
+   "query":"steve job",
+   "fields":["title","overview"],
+   "operator": "or",
+   "type":"cross_fields"
+  }
+ }
+}
+ ```
+
+看一下不同的评分规则
+
+### 3.query string
+
+方便的利用AND(+) OR(|) NOT(-)
+
+```
+GET /movie/_search
+{
+ "query":{
+  "query_string":{
+   "fields":["title"],
+   "query":"steve AND jobs"
+  }
+ }
+}
+```
+
+
+
+### 4.过滤查询
+
+filter过滤查询
+
+**单条件过滤**
+
+```
+GET /movie/_search
+{
+ "query":{
+  "bool":{
+   "filter":{
+     "term":{"title":"steve"}
+   }
+  }
+ }
+}
+```
+
+
+
+**多条件过滤**
+
+```
+GET /movie/_search
+{
+ "query":{
+  "bool":{
+   "filter":[
+     {"term":{"title":"steve"}},
+     {"term":{"cast.name":"gaspard"}},
+     {"range": { "release_date": { "lte": "2015/01/01" }}},
+     {"range": { "popularity": { "gte": "25" }}}
+     ]
+  }
+ },
+ "sort":[
+  {"popularity":{"order":"desc"}}
+ ]
+}
+```
+
+
+
+带match打分的的filter
+
+```
+GET /movie/_search
+{
+ "query":{
+  "bool":{
+   "must": [
+     { "match": { "title":  "Search"    }}, 
+     { "match": { "tagline": "Elasticsearch" }} 
+   ],
+   "filter":[
+     {"term":{"title":"steve"}},
+     {"term":{"cast.name":"gaspard"}},
+     {"range": { "release_date": { "lte": "2015/01/01" }}},
+     {"range": { "popularity": { "gte": "25" }}}
+     ]
+  }
+ }
+}
+```
+
+返回0结果
+
+```
+GET /movie/_search
+{
+ "query":{
+  "bool":{
+   "should": [
+     { "match": { "title":  "Search"    }}, 
+     { "match": { "tagline": "Elasticsearch" }} 
+   ],
+   "filter":[
+     {"term":{"title":"steve"}},
+     {"term":{"cast.name":"gaspard"}},
+     {"range": { "release_date": { "lte": "2015/01/01" }}},
+     {"range": { "popularity": { "gte": "25" }}}
+     ]
+  }
+ }
+}
+```
+
+ 
+
+有结果，但是返回score为0，因为bool中若有filter的话，即便should都不满足，只是返回为0分而已
+
+修改为
+
+```
+GET /movie/_search
+{
+ "query":{
+  "bool":{
+   "should": [
+     { "match": { "title":  "life"    }}, 
+     { "match": { "tagline": "Elasticsearch" }} 
+   ],
+   "filter":[
+     {"term":{"title":"steve"}},
+     {"term":{"cast.name":"gaspard"}},
+     {"range": { "release_date": { "lte": "2015/01/01" }}},
+     {"range": { "popularity": { "gte": "25" }}}
+     ]
+  }
+ }
+}
+```
+
+可以看到分数
 
 
 
 # 查全率和查准率
 
+> 查全率：正确的结果有n个，实际查询出来正确的有m  **查全率：**m/n
+>
+> 查准率：查出的n个文档有m个正确  **查准率：m/n**
+>
+> 两者不可兼得，但可以调整排序
 
+function score自定义打分
 
-```
-
-
-
-```
-
-
-
-
-
-
+ ```
+GET /movie/_search
+{
+ "query":{
+  "function_score": {
+   //原始查询得到oldscore
+   "query": {   
+     "multi_match":{
+     "query":"steve job",
+     "fields":["title","overview"],
+     "operator": "or",
+     "type":"most_fields"
+   }
+  },
+  "functions": [
+   {"field_value_factor": {
+      "field": "popularity",  //对应要处理的字段
+      "modifier": "log2p",  //将字段值+2后，计算对数
+      "factor": 10  //字段预处理*10
+     }
+   }
+  ], 
+ 
+  "score_mode": "sum",  //不同的field value之间的得分相加
+  "boost_mode": "sum"  //最后在与old value相加
+ }
+}
+}
+ ```
 
 # 相关性排序调整
 
-
-
-```
-
-
-
-
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 8-5 查询语句进阶（1） (07:36)
-
- 8-6 查询语句进阶（2） (09:25)
-
- 8-7 查询语句进阶（3） (08:59)
-
- 8-8 查询语句进阶（4） (04:35)
-
- 8-9 查询语句进阶（5） (06:09)
-
- 8-10 查询语句进阶（6） (04:51)
-
- 8-11 多字段查询进阶（1） (11:26)
-
- 8-12 多字段查询进阶（2） (04:02)
-
- 8-13 多字段查询进阶（3） (06:16)
-
- 8-14 多字段查询进阶（4） (12:11)
-
- 8-15 过滤与排序 (13:34)
-
- 8-16 自定义score计算（上） (07:01)
-
- 8-17 自定义score计算（下） (09:28)
-
- 8-18 【阶段总结】ES进阶之构建试验
-
- 8-19 【阶段总结】ES进阶之多字段查询
-
- 8-20 【阶段总结】ES进阶之自定义排序
-
- 8-21 【勤于思考，夯实学习成果】ES进阶之课后思考题
-
+> https://www.cnblogs.com/orzlin/p/10496869.html
