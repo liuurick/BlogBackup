@@ -33,13 +33,13 @@ https://dev.mysql.com/downloads/mysql/
 
 安装路径：
 
-![image-20201122172644460](C:\Users\admin\Desktop\blog\source\images\2020112201.png)
+![image-20201122172644460](/images/2020112201.png)
 
 上传并解压文件：
 
 `tar -xvf MySQL-5.5.62-1.el7.x86_64.rpm-bundle.tar`
 
-![image-20201122210059330](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122210059330.png)
+![image-20201122210059330](/images/2020112202.png)
 
 
 

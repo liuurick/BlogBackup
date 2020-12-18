@@ -297,10 +297,6 @@ GET /employee/_search
 
 
 
-
-
-
-
 利用analyze api搜索
 
 先建立索引

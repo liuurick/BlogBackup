@@ -218,3 +218,72 @@ GET /shop/_search
 让搜索引擎理解语义
 
 影响召回及排序
+
+
+
+## 重新构建es索引
+
+采取词性影响召回策略模型 通过category_id
+
+
+
+## 引入Java代码：
+
+构造分类：
+
+```java
+private Integer getCategoryIdByToken(String token) {
+    for (Integer key : categoryWorkMap.keySet()) {
+        List<String> tokenList = categoryWorkMap.get(key);
+        if (tokenList.contains(token)) {
+            return key;
+        }
+    }
+    return null;
+}
+
+private Map<Integer, List<String>> categoryWorkMap = new HashMap<>();
+
+@PostConstruct
+public void init() {
+    categoryWorkMap.put(1, new ArrayList<>());
+    categoryWorkMap.put(2, new ArrayList<>());
+
+    categoryWorkMap.get(1).add("吃饭");
+    categoryWorkMap.get(1).add("下午茶");
+
+    categoryWorkMap.get(2).add("休息");
+    categoryWorkMap.get(2).add("睡觉");
+    categoryWorkMap.get(2).add("住宿");
+
+}
+```
+
+在构造分词函数识别器时调用`getCategoryIdByToken`方法
+
+```java
+/**
+ * 构造分词函数识别器
+ * @param keyword
+ * @return
+ * @throws IOException
+ */
+private Map<String, Object> analyzeCategoryKeyword(String keyword) throws IOException {
+    Map<String, Object> res = new HashMap<>();
+
+    Request request = new Request("GET", "/shop/_analyze");
+    request.setJsonEntity("{" + "  \"field\": \"name\"," + "  \"text\":\"" + keyword + "\"\n" + "}");
+    Response response = highLevelClient.getLowLevelClient().performRequest(request);
+    String responseStr = EntityUtils.toString(response.getEntity());
+    JSONObject jsonObject = JSONObject.parseObject(responseStr);
+    JSONArray jsonArray = jsonObject.getJSONArray("tokens");
+    for (int i = 0; i < jsonArray.size(); i++) {
+        String token = jsonArray.getJSONObject(i).getString("token");
+        Integer categoryId = getCategoryIdByToken(token);
+        if (categoryId != null) {
+            res.put(token, categoryId);
+        }
+    }
+    return res;
+}
+```

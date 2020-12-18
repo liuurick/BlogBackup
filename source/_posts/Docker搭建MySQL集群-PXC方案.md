@@ -1,13 +1,15 @@
 ---
-xmltitle: MySQL集群-PXC方案
+xmltitle: Docker搭建MySQL集群-PXC方案
 date: 2020-8-21 20:24:44
 tags: [MySQL集群,Docker]
-categories: MySQL
+categories: PXC
 ---
 
-常见的集群方案包括：Replication，Percona XtraDB Cluster（PXC）
+尝试通过Dcoekr搭建MySQL集群
 
 <!--more-->
+
+常见的集群方案包括：Replication，Percona XtraDB Cluster（PXC）
 
 > MySQL主从复制：https://www.jianshu.com/p/faf0127f1cb2
 
@@ -24,7 +26,7 @@ Replication方案适用于日志，博客这样的网站，存储一些价值较
 
 ### 一、搭建准备
 
-这里我是尝试通过Docker搭建的。Docker的安装与配置非常简单。
+Docker的安装与配置非常简单。
 
 #### 1.安装docker
 
@@ -131,7 +133,7 @@ docker run -d -p 3310:3306 -e MYSQL_ROOT_PASSWORD=123456 -e CLUSTER_NAME=PXC -e 
 
 #### 2.创建haproxy配置文件
 
-配置参考：http://zhangge.net/5125.html
+> 配置参考：http://zhangge.net/5125.html
 
 在/home/soft/haproxy/目录下创建haproxy.cfg文件
 

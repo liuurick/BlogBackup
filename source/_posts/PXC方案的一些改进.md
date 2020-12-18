@@ -2,7 +2,7 @@
 title: PXC方案的一些改进
 date: 2020-11-09 21:35:39
 tags: [Docker,MySQL集群]
-categories: MySQL
+categories: PXC
 ---
 
 之前MySQL集群搭建使用的是PXC方案，最后想想还是有很多地方需要改进：
@@ -61,11 +61,11 @@ vrrp_instance  VI_1 {
 因为不能直接停止容器，所以为了正常退出不关闭容器，使用Ctrl+P+Q进行退出容器
 检验：在宿主机中，我们使用：ping 172.10.0.201，检测是否真正启动
 
-![image-20201109224438458](C:\Users\admin\Desktop\blog\source\images\2020110901.png)
+![image-20201109224438458](/images/2020110901.png)
 
 
 
-![image-20201109225321905](C:\Users\admin\Desktop\blog\source\images\2020110902.png)
+![image-20201109225321905](/images/2020110902.png)
 
 
 

@@ -61,7 +61,7 @@ Legacy versions：遗留的老版本的稳定版
 **1.需要安装gcc环境**
 
 ```
-# yum install gcc-c++
+yum install gcc-c++
 ```
 
 **2.第三方的开发包**
@@ -75,7 +75,7 @@ nginx的http模块使用pcre来解析正则表达式，所以需要在linux上�
 **注：pcre-devel是使用pcre开发的一个二次开发库。nginx****也需要此库**。
 
 ```
-# yum install -y pcre pcre-devel
+yum install -y pcre pcre-devel
 ```
 
 **2 zlib**
@@ -83,7 +83,7 @@ nginx的http模块使用pcre来解析正则表达式，所以需要在linux上�
 zlib库提供了很多种压缩和解压缩的方式，nginx使用zlib对http包的内容进行gzip，所以需要在linux上安装zlib库。
 
 ```
-# yum install -y zlib zlib-devel
+yum install -y zlib zlib-devel
 ```
 
 **3 openssl**
@@ -95,7 +95,7 @@ OpenSSL 是一个强大的安全套接字层密码库，囊括主要的密码算
 nginx不仅支持http协议，还支持https（即在ssl协议上传输http），所以需要在linux安装openssl库。
 
 ```
-# yum -y install pcre  pcre-devel zlib  zlib-devel openssl openssl-devel
+yum -y install pcre  pcre-devel zlib  zlib-devel openssl openssl-devel
 ```
 
 ## 3 nginx安装过程
@@ -107,7 +107,7 @@ nginx不仅支持http协议，还支持https（即在ssl协议上传输http）�
 **2 解压到/usr/local下面**
 
 ```
-# tar -xvf nginx-1.14.0.tar.gz -C /usr/local
+tar -xvf nginx-1.14.0.tar.gz -C /usr/local
 ```
 
 **3 使用cofigure命令创建一个makeFile文件**
@@ -115,8 +115,6 @@ nginx不仅支持http协议，还支持https（即在ssl协议上传输http）�
 **执行下面的命令的时候，一定要进入到nginx-1.14.0目录里面去。**
 
 ![img](/images/2020073104.png)
-
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
 
 ```
 ./configure \
@@ -132,8 +130,6 @@ nginx不仅支持http协议，还支持https（即在ssl协议上传输http）�
 --http-uwsgi-temp-path=/var/temp/nginx/uwsgi \
 --http-scgi-temp-path=/var/temp/nginx/scgi \--with-http_stub_status_module \--with-http_ssl_module \--with-file-aio \--with-http_realip_module
 ```
-
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
 
 如果没有makeFile文件，编译的时候会报错
 
@@ -350,17 +346,17 @@ hosts文件的位置：C:\Windows\System32\drivers\etc
 
 1 修改本地hosts配置文件
 
-![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180528233243735-537226043.png)
+![img](/images/2020073120.png)
 
 2 复制html目录，分别改名为html-taobao和html-baidu
 
-![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180528233425639-1929848567.png)
+![img](/images/2020073121.png)
 
 3 分别修改html-baidu和html-taobao里面的index.html文件，方便区分
 
-![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180528233638275-1668361848.png)
+![img](/images/2020073123.png)
 
-![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180528233727028-1216322786.png)
+![img](/images/2020073122.png)
 
 4 刷新配置文件
 
@@ -374,11 +370,11 @@ hosts文件的位置：C:\Windows\System32\drivers\etc
 
 # 13 正向代理
 
-![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180529000121513-942126145.png)
+![img](/images/2020073124.png)
 
 # 14 反向代理
 
-![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180529000622924-995860976.png)
+![img](/images/2020073125.png)
 
 反向代理服务器决定那台服务器提供服务
 
@@ -390,7 +386,7 @@ hosts文件的位置：C:\Windows\System32\drivers\etc
 
 nginx代理服务器使用虚拟机192.168.204.131
 
-![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180529001151869-999884385.png)
+![img](/images/2020073126.png)
 
 第一步：安装两个tomcat，分别运行在8080和8081端口。
 
@@ -398,7 +394,7 @@ nginx代理服务器使用虚拟机192.168.204.131
 
 第三步：反向代理服务器的配置
 
- ![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180529001600606-1806158722.png)
+ ![img](/images/020073127.png)
 
 第四步：nginx重新加载配置文件
 
@@ -416,11 +412,11 @@ nginx代理服务器使用虚拟机192.168.204.131
 
 如果一个服务由多个服务器提供，需要把负载分配到不同的服务器处理，需要负载均衡。
 
-![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180529002643025-1569805563.png)
+![img](/images/2020073128.png)
 
 可以根据服务器的实际情况调整服务器权重。权重越高分配的请求越多，权重越低，请求越少。默认是都是1
 
-![img](https://images2018.cnblogs.com/blog/1320077/201805/1320077-20180529002741304-1542056839.png)
+![img](/images/2020073129.png)
 
 # 17 设置nginx开机自启动（centos6.5）
 
@@ -445,8 +441,6 @@ nginx代理服务器使用虚拟机192.168.204.131
 ```
 
 然后加下面的内容复制到nginx配置文件中
-
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
 
 ```
 #!/bin/sh
@@ -563,7 +557,7 @@ case "$1" in
 esac
 ```
 
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
 
 上面的脚本文件并不是自己写的，是nginx官方提供的。
 
@@ -640,8 +634,6 @@ NGINX_CONF_FILE="/etc/nginx/nginx.conf" 修改成你的配置文件的路径
 
 内如如下：
 
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
-
 ```
 [Unit]
 Description=nginx service
@@ -658,10 +650,6 @@ PrivateTmp=true
 WantedBy=multi-user.target
 ```
 
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
-
-[Unit]: 服务的说明
-
 Description:描述服务
 After:描述服务类别
 [Service]服务运行参数的设置
@@ -670,7 +658,7 @@ ExecStart为服务的具体运行命令
 ExecReload为重启命令
 ExecStop为停止命令
 PrivateTmp=True表示给服务分配独立的临时空间
-注意：[Service]的启动、重启、停止命令全部要求使用绝对路径
+**注意**：[Service]的启动、重启、停止命令全部要求使用绝对路径
 [Install]运行级别下服务安装的相关设置，可设置为多用户，即系统运行级别为3
 
 保存退出。
@@ -689,8 +677,6 @@ PrivateTmp=True表示给服务分配独立的临时空间
 
 **第四步：服务的启动/停止/刷新配置文件/查看状态**
 
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
-
 ```
 # systemctl start nginx.service　         启动nginx服务
 # systemctl stop nginx.service　          停止服务
@@ -701,10 +687,6 @@ PrivateTmp=True表示给服务分配独立的临时空间
 # systemctl disable nginx.service         停止开机自启动
 ```
 
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
-
- 
-
 ##  **一个常见的错误**
 
 ### Warning: nginx.service changed on disk. Run 'systemctl daemon-reload' to reload units.
@@ -712,7 +694,7 @@ PrivateTmp=True表示给服务分配独立的临时空间
  直接按照提示执行命令systemctl daemon-reload 即可。
 
 ```
-# systemctl daemon-reload
+systemctl daemon-reload
 ```
 
  
@@ -729,11 +711,11 @@ centos6.5的自启动设置见16部分知识点。
 
 使用命名systemctl status nginx查看了一下状态，内容如下：
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180603235731837-1149240490.png)
+![img](/images/2020073130.png)
 
 然后我直接进入/usr/local/nginx/sbin目录下面，执行./nginx，出现了下面的错误提示：
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180603235854971-2001750680.png)
+![img](/images/2020073131.png)
 
 从这两个提示信息，可以大概看出告诉我们的就是找不到/var/run/nginx/目录下面的nginx.pid文件。
 
@@ -743,11 +725,11 @@ centos6.5的自启动设置见16部分知识点。
 
 在配置文件中找到：#pid    logs/nginx.pid;
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604000215412-935975488.png)
+![img](/images/2020073132.png)
 
 将其修改为：去掉注释，修改成自己的路径
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604000522605-1193262105.png)
+![img](/images/2020073133.png)
 
 修改完成保存退出
 
@@ -765,11 +747,11 @@ centos6.5的自启动设置见16部分知识点。
 
 可以查看一下是否成功启动了
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604001021288-75578496.png)
+![img](/images/2020073134.png)
 
 ## 3 故障重现
 
-**[emerg] open() "/var/run/nginx/nginx.pid" failed (2: No such file or directory)处理**
+> [emerg] open() "/var/run/nginx/nginx.pid" failed (2: No such file or directory)处理
 
 测试发现，只要执行reboot命令重启，var/run/nginx，nginx这个文件夹都会被删除，
 
@@ -779,7 +761,7 @@ centos6.5的自启动设置见16部分知识点。
 
 **第一步：进入 cd /usr/local/nginx/conf/ 目录，编辑配置文件nginx.conf ；**
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604004515961-636067355.png)
+![img](/images/2020073135.png)
 
 **第二步：在/usr/local/nginx目录下建立logs文件夹**
 
@@ -787,7 +769,7 @@ centos6.5的自启动设置见16部分知识点。
 # mkdir /usr/local/nginx/logs
 ```
 
-**![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604005704151-2060063432.png)**
+**![img](/images/2020073136.png)**
 
 **第三步：把/var/run/nginx/目录下的nginx.pid这个文件拷贝到第二步创建的logs文件夹里面。**
 
@@ -795,7 +777,7 @@ centos6.5的自启动设置见16部分知识点。
 # cp nginx.pid /usr/local/nginx/logs/
 ```
 
- ![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604005724309-1632561610.png)
+ ![img](/images/2020073137.png)
 
 **第四步：把logs这个文件夹在conf下也拷贝一份**
 
@@ -803,7 +785,7 @@ centos6.5的自启动设置见16部分知识点。
 # cp -r logs conf
 ```
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604005846851-1054721549.png)
+![img](/images/2020073138.png)
 
 **第五步：修改权限/usr/local/nginx/logs/目录下面的nginx.pid文件的权限。**
 
@@ -811,7 +793,7 @@ centos6.5的自启动设置见16部分知识点。
 [root@iz2logs]# chmod 755 nginx.pid
 ```
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604010132048-1203053027.png)
+![img](/images/2020073139.png)
 
 **第六步：重启reboot**
 
@@ -825,7 +807,7 @@ centos6.5的自启动设置见16部分知识点。
 # /usr/local/nginx/sbin/nginx
 ```
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604010643083-893375042.png)
+![img](/images/2020073140.png)
 
 这次是终于成功解决了，一边安装一边解决问题，到这里nginx总是算是可以自启动了，并且也不会重启后找不到nginx.pid文件。真的太不容易了。
 
@@ -839,7 +821,7 @@ centos6.5的自启动设置见16部分知识点。
 
 修改nginx.conf文件如下：
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604012457087-1758425381.png)
+![img](/images/2020073141.png)
 
 在/usr/local/nginx/目录下创建一个logs目录。
 
@@ -853,7 +835,7 @@ error_log logs/error.log info;
 
 **第一步：进入 cd /usr/local/nginx/conf/ 目录，编辑配置文件nginx.conf ；**
 
-![img](https://images2018.cnblogs.com/blog/1320077/201806/1320077-20180604001806779-1643312454.png)
+![img](/images/2020073142.png)
 
 **第二步：保证肯定有这个路径，可以直接创建一下这个配置的目录**
 
