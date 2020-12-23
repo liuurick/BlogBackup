@@ -1,13 +1,21 @@
 ---
-title: Spring源码的下载与编译
-date: 2020-10-19 19:13:57
+title: Spring源码学习
+date: 2020-12-20 12:46:01
 tags: Spring源码
 categories: Spring
 ---
+
 Spring学了很久了，但是一直没有深入到源码，希望在接下来的源码学习中有所收获。。。
 <!--more-->
 
-### 一、环境安装
+# 1 概览
+
+
+
+# 2 环境准备
+
+### 2.1 环境安装
+
 安装Idea，JDK，maven并完成相应的配置
 ![image-20201019191945647](/images/2020101901.png)
 
@@ -19,13 +27,13 @@ Spring学了很久了，但是一直没有深入到源码，希望在接下来�
 
 
 
-### 二、下载和编译
+### 2.2 下载和编译
 
-#### 2.1 下载并解压
+#### 2.2.1 下载并解压
 
 ![image-20201019192816197](/images/2020101903.png)
 
-#### 2.2 修改build.gradle
+#### 2.2.2 修改build.gradle
 
 在build.gradle添加阿里云的中央仓库地址，提高依赖文件的下载速度
 
@@ -44,7 +52,7 @@ repositories {
 
 
 
-#### 2.3 安装官方文档进行配置
+#### 2.2.3 安装官方文档进行配置
 
 ![image-20201019200051103](/images/2020101906.png)
 
@@ -72,12 +80,69 @@ repositories {
 
 到这里就完成Spring源码的下载与编译
 
-### 三、通过一个小demo来测试一下
+### 2.3 通过一个小demo来测试一下
 
 [spring-demo代码链接](https://github.com/liuurick/spring-learning/tree/master/01-spring-framework-5.2.9.RELEASE/spring-demo)
 
-
-
-### 四、简易自研框架的编写
+### 2.4 简易自研框架的编写
 
 [02-simpleframework](https://github.com/liuurick/spring-learning/tree/master/02-simpleframework)
+
+![image-20201220101456099](/images/2020101910.png)
+
+jsp运行原理图：
+
+![image-20201220101615094](/images/2020101911.png)
+
+
+
+# 3 业务系统架子的构建
+
+
+
+
+
+
+
+# 4 自研框架IOC实现前奏
+
+
+
+# 5 自研框架IOC容器的实现
+
+
+
+
+
+# 6 SpringIOC容器源码解析
+
+
+
+# 7 详解SpringIOC容器的初始化
+
+
+
+
+
+# 8 SpringIOC容器的依赖注入
+
+
+
+# 9 自研框架AOP的讲解与实现
+
+
+
+# 10 SpringAOP的源码解析
+
+
+
+# 11 自研框架MVC的实现
+
+
+
+# 12 SpringMVC流程分析
+
+
+
+# 13 总结
+
