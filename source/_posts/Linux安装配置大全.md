@@ -19,3 +19,23 @@ Linux各种版本安装配置
 
 [Ubuntu安装教程](https://mp.weixin.qq.com/s/vkLZ_3Jp4HdQ8PDIMYsGEw)
 
+
+
+# CentOS7磁盘操作
+
+## linux磁盘分区扩容
+
+大概分为以下几步：
+
+1. 分区fdisk
+2. 格式化mkfs
+3. 挂载mount
+
+> 详细操作：https://www.cnblogs.com/chenmh/p/5096592.html
+
+
+
+**其他操作：**
+
+du 查看文件数据占用多少磁盘空间
+swap交换分区 是一种通过在磁盘中预先划分一定的空军，然后就讲把内存中暂时不常用的数据临时存放在磁盘中，以便腾出物理内存空间让更活跃的程序服务来使用的技术，其设计目的是为了解决真实物理内存不足的问题
