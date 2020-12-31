@@ -2,7 +2,7 @@
 title: 读《深入浅出MyBatis技术原理与实战》
 date: 2020-12-20 16:06:40
 tags: MyBatis
-categories: MyBatis
+categories: 读书
 ---
 
 1.MyBatis简介

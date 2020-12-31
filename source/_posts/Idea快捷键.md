@@ -1,11 +1,11 @@
 ---
-title: Idea快捷键
+title: IDEA快捷键
 date: 2020-9-11 11:11:29
 tags: Idea快捷键
-categories: Idea
+categories: [开发工具,集成开发环境]
 ---
 
-Idea快捷键记录
+IDEA快捷键记录
 
 <!--more-->
 
