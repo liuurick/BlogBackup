@@ -5,9 +5,17 @@ tags: 面向对象
 categories: JavaSE基础
 ---
 
+[TOC]
+
+<!--more-->
+
 > 面向对象的多态性：https://liuyangjun.blog.csdn.net/article/details/79788326
 >
 > 理解java的三大特性之多态：https://www.cnblogs.com/chenssy/p/3372798.html
+
+
+
+# 封装
 
 
 

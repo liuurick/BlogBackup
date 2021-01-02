@@ -82,7 +82,7 @@ ElasticSearch搜索优化主要通过三个方面：
 
 在集群的各节点上的该路径`elasticsearch\elasticsearch-node3\config\analysis-ik`加上同义词文件
 
-![image-20201209164003792](/images/202012091601.png)
+![image-20201209164003792](/images/2020120901.png)
 
 
 

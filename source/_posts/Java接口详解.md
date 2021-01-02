@@ -1,7 +1,8 @@
 ---
 title: Java接口详解
 date: 2020-12-27 18:30:52
-tags:
+tags: 接口
+categories: [编程基础,Java语言,JavaSE基础]
 ---
 
 > 接口:https://blog.csdn.net/qq_19782019/article/details/80259836

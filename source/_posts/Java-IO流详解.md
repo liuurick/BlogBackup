@@ -2,8 +2,12 @@
 title: Java IO流详解
 date: 2020-12-27 22:01:11
 tags: IO流
-categories: JavaSE基础
+categories: [编程基础,Java语言,JavaSE基础]
 ---
+
+[TOC]
+
+<!--more-->
 
 > Java之美[从菜鸟到高手演变]之Java中的IO:https://blog.csdn.net/zhangerqing/article/details/8466532
 >
@@ -12,8 +16,6 @@ categories: JavaSE基础
 > 史上最骚最全最详细的IO流教程，没有之一！:https://www.cnblogs.com/yichunguo/p/11775270.html
 >
 > Java IO:http://www.cyc2018.xyz/Java/Java%20IO.html#%E4%B8%80%E3%80%81%E6%A6%82%E8%A7%88
-
-<!--more-->
 
 # 1 概述
 
