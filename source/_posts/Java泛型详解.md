@@ -53,13 +53,13 @@ public class GenericDemo {
 
 报错如下：
 
-![image-20201221104504502](C:\Users\admin\Desktop\blog\source\images\2020122101.png)
+![image-20201221104504502](/images/2020122101.png)
 
 这个类型转换的错误在运行期才报出来，显然是不符合我们的预期，应该在编译器就应该解决掉。
 
 设置List容器的类型，就可以解决上面的问题
 
-![image-20201221104807273](C:\Users\admin\Desktop\blog\source\images\2020122102.png)
+![image-20201221104807273](/images/2020122102.png)
 
 
 
@@ -120,7 +120,7 @@ public class GenericClassExample<T> {
 }
 ```
 
-![image-20201221111507121](C:\Users\admin\Desktop\blog\source\images\2020122103.png)
+![image-20201221111507121](/images/2020122103.png)
 
 
 
@@ -130,11 +130,11 @@ public class GenericClassExample<T> {
 
 - 泛型参数不支持基本类型，只能是类类型
 
-  ![image-20201221113906058](C:\Users\admin\Desktop\blog\source\images\2020122104.png)
+  ![image-20201221113906058](/images/2020122104.png)
 
 - 泛型相关的信息不会进入到运行时阶段
 
-  ![image-20201221114453417](C:\Users\admin\Desktop\blog\source\images\2020122105.png)
+  ![image-20201221114453417](/images/2020122105.png)
 
 - 同一泛型类，根据不同数据类型创建对象，本质是同一类型
 
@@ -185,7 +185,7 @@ public class GenericClassExample<T> {
   }
   ```
 
-  ![image-20210102213439918](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210102213439918.png)
+  ![image-20210102213439918](/images/2020122107.png)
 
 ## 2.泛型类派生子类
 
@@ -240,34 +240,8 @@ public class GenericClassExample<T> {
   }
   ```
 
-  
 
-> 能否在泛型里面使用具备继承关系的类?
->
-> 不能使用
->
-> - 使用通配符？，但是会使得泛型的类型检查失去意义
-> - 给泛型加入上边界 `? extends E`
-> - 给泛型加入下边界 `? super E`
 
-```java
-public class GenericDemo {
-    public static void handleMember(GenericClassExample<?> integerGenericClassExample){
-        Integer result = 111 + (Integer)integerGenericClassExample.getMember();
-        System.out.println(result);
-    }
-
-    public static void main(String[] args) {
-        GenericClassExample<String> stringGE = new GenericClassExample<String>("hello");
-        GenericClassExample<Number> integerGE = new GenericClassExample<Number>(123);
-        System.out.println(stringGE.getMember().getClass());
-        System.out.println(integerGE.getMember().getClass());
-        System.out.println(stringGE.sayhello("liubin"));
-
-        handleMember(integerGE);
-    }
-}
-```
 
 
 
@@ -339,43 +313,164 @@ public class Apple implements Generator<String> {
 }
 ```
 
-## 4.泛型通配符
 
-我们知道`Ingeter`是`Number`的一个子类，同时在特性章节中我们也验证过`Generic<Ingeter>`与`Generic<Number>`实际上是相同的一种基本类型。那么问题来了，在使用`Generic<Number>`作为形参的方法中，能否使用`Generic<Ingeter>`的实例传入呢？在逻辑上类似于`Generic<Number>`和`Generic<Ingeter>`是否可以看成具有父子关系的泛型类型呢？
 
-为了弄清楚这个问题，我们使用`Generic<T>`这个泛型类继续看下面的例子：
+## 4.泛型方法
 
-```java
-public void showKeyValue1(Generic<Number> obj){
-    Log.d("泛型测试","key value is " + obj.getKey());
-}123
-Generic<Integer> gInteger = new Generic<Integer>(123);
-Generic<Number> gNumber = new Generic<Number>(456);
-
-showKeyValue(gNumber);
-
-// showKeyValue这个方法编译器会为我们报错：Generic<java.lang.Integer> 
-// cannot be applied to Generic<java.lang.Number>
-// showKeyValue(gInteger);12345678
-```
-
-通过提示信息我们可以看到`Generic<Integer>`不能被看作为``Generic<Number>`的子类。由此可以看出:**同一种泛型可以对应多个版本（因为参数类型是不确定的），不同版本的泛型类实例是不兼容的**。
-
-回到上面的例子，如何解决上面的问题？总不能为了定义一个新的方法来处理`Generic<Integer>`类型的类，这显然与java中的多台理念相违背。因此我们需要一个在逻辑上可以表示**同时**是`Generic<Integer>`和`Generic<Number>`父类的引用类型。由此类型通配符应运而生。
-
-我们可以将上面的方法改一下：
-
-```java
-public void showKeyValue1(Generic<?> obj){
-    Log.d("泛型测试","key value is " + obj.getKey());
-}123
-```
-
-类型通配符一般是使用？代替具体的类型实参，注意了，**此处’？’是类型实参，而不是类型形参** 。重要说三遍！**此处’？’是类型实参，而不是类型形参** ！ **此处’？’是类型实参，而不是类型形参** ！再直白点的意思就是，此处的？和Number、String、Integer一样都是一种实际的类型，可以把？看成所有类型的父类。是一种真实的类型。
-
-可以解决当具体类型不确定的时候，这个通配符就是 **?** ；**当操作类型时，不需要使用类型的具体功能时，只使用Object类中的功能。那么可以用 ? 通配符来表未知类型。**
-
-## 5.泛型方法
-
+> 泛型方法，是在调用方法的时候指明泛型的具体类型。
+>
 > 泛型方法既能用在泛型类、泛型接口里，也能用在普通类或者接口里
 
+**语法**
+
+```java
+修饰符 <T，E, ...> 返回值类型 方法名(形参列表) { 
+	方法体... 
+}
+```
+
+- public与返回值中间`<T>`非常重要，可以理解为声明此方法为泛型方法。
+- 只有声明了`<T>`的方法才是泛型方法，泛型类中的使用了泛型的成员方法并不是泛型方法。
+- `< T >`表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T。
+- 与泛型类的定义一样，此处`T`可以随便写为任意标识，常见的如`T、E、K、V`等形式的参数常用于表示泛型。
+
+**泛型方法与可变参数:**
+
+```java
+public <E> void print(E... e){
+	for (E e1 : e) {
+		System.out.println(e);
+	}
+}
+```
+
+**泛型方法总结**
+
+- **泛型方法能使方法独立于类而产生变化**
+- **如果static方法要使用泛型能力，就必须使其成为泛型方法**
+
+```java
+ /**
+     * 静态的泛型方法，采用多个泛型类型
+     * @param t
+     * @param e
+     * @param k
+     * @param <T>
+     * @param <E>
+     * @param <K>
+     */
+    public static <T,E,K> void printType(T t, E e, K k) {
+        System.out.println(t + "\t" + t.getClass().getSimpleName());
+        System.out.println(e + "\t" + e.getClass().getSimpleName());
+        System.out.println(k + "\t" + k.getClass().getSimpleName());
+    }
+```
+
+## 5.泛型通配符
+
+> 能否在泛型里面使用具备继承关系的类?
+>
+> 不能使用
+>
+> - 使用通配符？，但是会使得泛型的类型检查失去意义
+> - 给泛型加入上边界 `? extends E`
+> - 给泛型加入下边界 `? super E`
+
+```java
+public class GenericDemo {
+    public static void handleMember(GenericClassExample<?> integerGenericClassExample){
+        Integer result = 111 + (Integer)integerGenericClassExample.getMember();
+        System.out.println(result);
+    }
+
+    public static void main(String[] args) {
+        GenericClassExample<String> stringGE = new GenericClassExample<String>("hello");
+        GenericClassExample<Number> integerGE = new GenericClassExample<Number>(123);
+        System.out.println(stringGE.getMember().getClass());
+        System.out.println(integerGE.getMember().getClass());
+        System.out.println(stringGE.sayhello("liubin"));
+
+        handleMember(integerGE);
+    }
+}
+```
+
+## 6.类型擦除
+
+**概念:**
+
+泛型是Java 1.5版本才引进的概念，在这之前是没有泛型的，但是泛型代码能够很好地和之前版本的代码兼容。那是因为，泛型信息只存在于代码编译阶段，在进入JVM之前，与泛型相关的信息会被擦除掉，我们称之为–类型擦除。
+
+**分类：**
+
+- 无限制类型擦除
+  ![image-20210103145023407](/images/2020122108.png)
+- 有限制类型擦除
+  ![image-20210103145059877](/images/2020122109.png)擦除方法中类型定义的参数
+  ![在这里插入图片描述](/images/2020122110.png)
+- 桥接方法
+  ![在这里插入图片描述](/images/2020122111.png)
+
+## 7.泛型和数组
+
+**泛型数组的创建**
+
+- 可以声明带泛型的数组引用，但是不能直接创建带泛型的数组对象
+
+```java
+ArrayList<String>[] listArr = new ArrayList<5>(); //会报错
+```
+
+会报错
+
+```java
+ArrayList[] list = new ArrayList[5];
+ArrayList<String>[] listArr = list;
+或者
+ArrayList<String>[] listArr = new ArrayList[5];
+```
+
+不会报错
+
+- 可以通过java.lang.reflect.Array的newInstance(Class,int)创建T[]数组
+
+```java
+public class Fruit<T> {
+    private T[] array;
+
+    public Fruit(Class<T> clz, int length){
+        //通过Array.newInstance创建泛型数组
+        array = (T[])Array.newInstance(clz, length);
+    }
+}
+```
+
+## 8.泛型和反射
+
+- 反射常用的泛型类
+  Class
+  Constructor
+
+```java
+public class Person {
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+/**
+ * 泛型与反射
+ */
+public class Test11 {
+	public static void main(String[] args) throws Exception {
+	     Class<Person> personClass = Person.class;
+	     Constructor<Person> constructor = personClass.getConstructor();
+	     Person person = constructor.newInstance();
+	 }
+}
+```
