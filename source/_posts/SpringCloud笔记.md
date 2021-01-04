@@ -79,7 +79,7 @@ mysql 5.7及以上
 
 
 
-# SpringCloud Alibaba入门简介
+# SpringCloud Alibaba入门
 
 ## Nacos服务注册和配置中心
 

@@ -331,8 +331,71 @@ public class Apple implements Generator<String> {
 
 - public与返回值中间`<T>`非常重要，可以理解为声明此方法为泛型方法。
 - 只有声明了`<T>`的方法才是泛型方法，泛型类中的使用了泛型的成员方法并不是泛型方法。
-- `< T >`表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T。
+- `<T>`表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T。
 - 与泛型类的定义一样，此处`T`可以随便写为任意标识，常见的如`T、E、K、V`等形式的参数常用于表示泛型。
+
+```java
+public class GenericFruit {
+    class Fruit{
+        @Override
+        public String toString() {
+            return "fruit";
+        }
+    }
+
+    class Apple extends Fruit{
+        @Override
+        public String toString() {
+            return "apple";
+        }
+    }
+
+    class Person{
+        @Override
+        public String toString() {
+            return "Person";
+        }
+    }
+
+    class GenerateTest<T>{
+        public void show_1(T t){
+            System.out.println(t.toString());
+        }
+
+        //在泛型类中声明了一个泛型方法，使用泛型E，这种泛型E可以为任意类型。可以类型与T相同，也可以不同。
+        //由于泛型方法在声明的时候会声明泛型<E>，因此即使在泛型类中并未声明泛型，编译器也能够正确识别泛型方法中识别的泛型。
+        public <E> void show_3(E t){
+            System.out.println(t.toString());
+        }
+
+        //在泛型类中声明了一个泛型方法，使用泛型T，注意这个T是一种全新的类型，可以与泛型类中声明的T不是同一种类型。
+        public <T> void show_2(T t){
+            System.out.println(t.toString());
+        }
+    }
+
+    public static void main(String[] args) {
+        Apple apple = new Apple();
+        Person person = new Person();
+
+        GenerateTest<Fruit> generateTest = new GenerateTest<Fruit>();
+        //apple是Fruit的子类，所以这里可以
+        generateTest.show_1(apple);
+        //编译器会报错，因为泛型类型实参指定的是Fruit，而传入的实参类是Person
+        //generateTest.show_1(person);
+
+        //使用这两个方法都可以成功
+        generateTest.show_2(apple);
+        generateTest.show_2(person);
+
+        //使用这两个方法也都可以成功
+        generateTest.show_3(apple);
+        generateTest.show_3(person);
+    }
+}
+```
+
+
 
 **泛型方法与可变参数:**
 
@@ -344,27 +407,53 @@ public <E> void print(E... e){
 }
 ```
 
-**泛型方法总结**
-
-- **泛型方法能使方法独立于类而产生变化**
-- **如果static方法要使用泛型能力，就必须使其成为泛型方法**
+泛型方法和可变参数的例子：
 
 ```java
- /**
-     * 静态的泛型方法，采用多个泛型类型
-     * @param t
-     * @param e
-     * @param k
-     * @param <T>
-     * @param <E>
-     * @param <K>
-     */
-    public static <T,E,K> void printType(T t, E e, K k) {
-        System.out.println(t + "\t" + t.getClass().getSimpleName());
-        System.out.println(e + "\t" + e.getClass().getSimpleName());
-        System.out.println(k + "\t" + k.getClass().getSimpleName());
+public <T> void printMsg( T... args){
+    for(T t : args){
+        Log.d("泛型测试","t is " + t);
     }
+}
 ```
+
+```
+printMsg("111",222,"aaaa","2323.4",55.55);
+```
+
+
+
+**静态方法与泛型**
+
+静态方法有一种情况需要注意一下，那就是在类中的静态方法使用泛型：**静态方法无法访问类上定义的泛型；如果静态方法操作的引用数据类型不确定的时候，必须要将泛型定义在方法上。**
+
+即：**如果静态方法要使用泛型的话，必须将静态方法也定义成泛型方法** 。
+
+```java
+public class StaticGenerator<T> {
+    ....
+    ....
+    /**
+     * 如果在类中定义使用泛型的静态方法，需要添加额外的泛型声明（将这个方法定义成泛型方法）
+     * 即使静态方法要使用泛型类中已经声明过的泛型也不可以。
+     * 如：public static void show(T t){..},此时编译器会提示错误信息：
+          "StaticGenerator cannot be refrenced from static context"
+     */
+    public static <T> void show(T t){
+
+    }
+}
+```
+
+
+
+**泛型方法总结**
+
+泛型方法能使方法独立于类而产生变化，以下是一个基本的指导原则：
+
+> 无论何时，如果你能做到，你就该尽量使用泛型方法。也就是说，如果使用泛型方法将整个类泛型化，那么就应该使用泛型方法。另外对于一个static的方法而已，无法访问泛型类型的参数。所以如果static方法要使用泛型能力，就必须使其成为泛型方法。
+
+
 
 ## 5.泛型通配符
 
