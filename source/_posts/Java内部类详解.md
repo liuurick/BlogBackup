@@ -5,16 +5,16 @@ tags: 内部类
 categories: [编程基础,Java语言,JavaSE基础]
 ---
 
-> https://www.iteye.com/topic/494230#
+[TOC]
 
-
-
-
-
-# 内部类概述
+<!--more-->
 
 > https://www.runoob.com/w3cnote/java-inner-class-intro.html
 >
+> https://www.iteye.com/topic/494230#
+
+# 内部类概述
+
 > 内部类：就是在一个类中定义一个类。举例：在一个类A的内部定义一个类B，类B就被称为内部类
 
 **定义格式：**
@@ -194,8 +194,6 @@ public class Outer {
     }
 }
 ```
-
-
 
 
 
