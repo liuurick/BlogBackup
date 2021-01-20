@@ -5,11 +5,15 @@ tags: 接口
 categories: [编程基础,Java语言,JavaSE基础]
 ---
 
-> 接口:https://blog.csdn.net/qq_19782019/article/details/80259836
->
-> https://www.cnblogs.com/chenssy/p/3376708.html
 
-https://www.cnblogs.com/dolphin0520/p/3811437.html
+
+> JAVA基础——接口（全网最详细教程）：https://blog.csdn.net/qq_19782019/article/details/80259836
+>
+> java提高篇(五)-----抽象类与接口：https://www.cnblogs.com/chenssy/p/3376708.html
+>
+> 深入理解Java的接口和抽象类：https://www.cnblogs.com/dolphin0520/p/3811437.html
+
+
 
 **接口：**
 

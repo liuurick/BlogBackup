@@ -21,7 +21,7 @@ categories: [应用框架,后端,分布式/微服务]
 
 # 版本对应
 
-SpringCloud Hoxton.SR1
+SpringCloud F
 
 SpringBoot 2.2.2.RELEASE
 
@@ -37,61 +37,55 @@ mysql 5.7及以上
 
 # SpringCloud笔记
 
-## 微服务架构编码构建
+## 微服务理解
 
-> [https://liuurick.github.io/2021/01/01/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%BC%96%E7%A0%81%E6%9E%84%E5%BB%BA/](https://liuurick.github.io/2021/01/01/微服务架构编码构建/)
+[微服务的理解](https://liuurick.github.io/2021/01/08/微服务的理解/)
 
-## 服务注册中心
+## 服务注册与发现（Eureka）
 
-- Eureka
-- Zookeeper
-- Consul
-- Nacos
+- Eureka Server
 
-## 服务调用
+- Eureka Client
 
-- Ribbon
-- LoadBalancer
-- Fergn
-- OpenFergn
+- Eureka高可用（两节点，三节点演示）
 
-## 服务降级
+  多个节点是两两注册
 
-- Hystrix
-- resilience4j
-- sentienl
+- 服务发现原理剖析
 
-## 服务网关
+## 服务通信
 
-- Zuul
-- Zuul2
-- gateway
+- 通信机制剖析
+- Feign
+- Ribbon（带领分析源码，了解底层）
+- RestTemplate
 
-## 服务配置
+## 分布式配置（Spring Cloud Config）
 
-- Config
-- Nacos
+- Config Server
+- Config Client
+- Git和Refresh
+- 自动刷新
+- SpringCloud Bus（配合RabbitMQ）
 
-## 服务总线
+## 网关（Zuul）
 
-- Bus
-- Nacos
+- 动态路由
+- Zuul高可用
+- 异常网关统一处理
+- 验证与安全
 
+## 熔断 （Hystrix）
 
-
-# SpringCloud Alibaba入门
-
-## Nacos服务注册和配置中心
-
-## Sentinel实现熔断与限流
-
-## Seata处理分布式事务
+- Hystrix Dashboard
+- 熔断机制
+- 目的和重要性
 
 
 
+![image-20210117105845082](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210117105845082.png)
 
 
 
-
-
+![image-20210117105905190](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210117105905190.png)
 
