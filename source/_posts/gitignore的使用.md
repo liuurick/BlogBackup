@@ -5,7 +5,7 @@ tags: gitignore
 categories: [开发工具,代码管理工具,Git]
 ---
 
-很长一段时间忽视了.gitignore的作用，果真是自己太菜了。。。
+很长一段时间忽视了.gitignore的作用，果真还是自己太菜了。。。
 
 [TOC]
 
@@ -13,7 +13,7 @@ categories: [开发工具,代码管理工具,Git]
 
 > 官方文档：https://github.com/github/gitignore
 
-# 官方模板
+# Java官方模板
 
 .gitignore文件
 
