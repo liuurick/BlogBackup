@@ -2,7 +2,7 @@
 title: ElasticSearch搜索优化
 date: 2020-12-09 17:21:11
 tags: ElasticSearch7
-categories: ElasticSearch
+categories: [后端,搜索引擎,ElasticSearch]
 ---
 
 ElasticSearch搜索优化主要通过三个方面：

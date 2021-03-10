@@ -2,7 +2,7 @@
 title: Docker安装RabbitMQ
 date: 2020-07-27 16:33:08
 tags: [Docker,RabbitMQ]
-categories: RabbitMQ
+categories: [后端,中间件,消息队列]
 ---
  RabbitMQ是基于AMQP的一款消息管理系统。AMQP(Advanced Message Queuing Protocol)，是一个提供消息服务的应用层标准高级消息队列协议，其中RabbitMQ就是基于这种协议的一种实现。
 

@@ -2,7 +2,7 @@
 title: git常见错误
 date: 2019-07-15 17:02:07
 tags: git常见错误
-categories: git
+categories: [开发工具,代码管理工具,Git]
 ---
 
 记录git常见错误
@@ -16,7 +16,7 @@ categories: git
 
 
 
-2.git Could not read from remote repository
+1.git Could not read from remote repository
 
 ```
 git remote add origin git@github.com:liuurick/BlogBackup.git
@@ -26,7 +26,7 @@ git bash输出
 
 
 
-3.error: failed to push some refs to xxx
+2.error: failed to push some refs to xxx
 
 > ! [rejected]        master -> master (fetch first)
 > error: failed to push some refs to 'git@github.com:liuurick/BlogBackup.git'

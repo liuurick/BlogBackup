@@ -1,8 +1,8 @@
 ---
 title: MySQL高级
-date: 2020-11-20 13:55:41
+date: 2020-11-22 13:55:41
 tags: MySQL高级
-categories: MySQL
+categories: [编程基础,MySQL]
 ---
 
 MySQL的深入学习主要分为5个部分，分别是：
@@ -39,13 +39,13 @@ https://dev.mysql.com/downloads/mysql/
 
 `tar -xvf MySQL-5.5.62-1.el7.x86_64.rpm-bundle.tar`
 
-![image-20201122210059330](/images/2020112202.png)
+![image-20201122172644460](/images/2020112202.png)
 
 
 
 安装：
 
-```
+```bash
 rpm -ivh MySQL-server-5.5.62-1.el7.x86_64.rpm
 rpm -ivh MySQL-client-5.5.62-1.el7.x86_64.rpm
 ```
@@ -54,11 +54,11 @@ rpm -ivh MySQL-client-5.5.62-1.el7.x86_64.rpm
 
 > conflicts with file from package mariadb-libs-1:5.5.56-2.el7.x86_641
 
-![image-20201122210437197](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122210437197.png)
+![image-20201122210437197](/images/2020112203.png)
 
 与mariadb冲突，删除mariadb即可！
 
-```
+```bash
 rpm -e mariadb-libs-1:5.5.65-1.el7.x86_64 --nodeps
 ```
 
@@ -66,11 +66,11 @@ rpm -e mariadb-libs-1:5.5.65-1.el7.x86_64 --nodeps
 
 ### 1.4 查看Mysql安装时创建的mysql用户和mysql组
 
-![image-20201122204405232](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122204405232.png)
+![image-20201122204405232](/images/2020112204.png)
 
 或者也可以执行mysqladmin --version 命令，类似java -version，如果可以查看消息，说明成功
 
-![image-20201122210850349](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122210850349.png)
+![image-20201122210850349](/images/2020112205.png)
 
 
 
@@ -83,13 +83,13 @@ service mysql stop
 
 查看进程：
 
-![image-20201122211604756](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122211604756.png)
+![image-20201122211604756](/images/2020112206.png)
 
 **注意：**可能会报下面的错误
 
 > Starting MySQL. ERROR! The server quit without updating PID file (/var/lib/mysql/localhost.localdomain.pid).
 
-![image-20201122211244330](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122211244330.png)
+![image-20201122211244330](/images/2020112207.png)
 
 ```
 解决步骤：
@@ -112,7 +112,7 @@ service mysql start
 /usr/bin/mysqladmin -u root password 123456
 ```
 
-![image-20201122212503860](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122212503860.png)
+![image-20201122212503860](/images/2020112208.png)
 
 
 
@@ -130,7 +130,7 @@ ntsysv
 
 `chkconfig --list|grep mysql`
 
-![image-20201122213038046](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122213038046.png)
+![image-20201122213038046](/images/2020112209.png)
 
 
 
@@ -151,7 +151,7 @@ show variables like '%char%';
 show variables like '%character%';
 ```
 
-![image-20201122220007001](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122220007001.png)
+![image-20201122220007001](/images/2020112210.png)
 
 修改my.cnf文件：
 
@@ -223,9 +223,9 @@ interactive-timeout
 
 ### 1.10 Mysql的安装位置
 
-在linux下查看安装目录 ps -ef|grep mysql
+在linux下查看安装目录 `ps -ef|grep mysql`
 
-![image-20201122212059724](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201122212059724.png)
+![image-20201122212059724](/images/2020112211.png)
 
 
 
@@ -269,7 +269,7 @@ Linux：/etc/my.cnf文件
 
 和其它数据库相比，MySQL有点与众不同，它的架构可以在多种不同场景中应用并发挥良好作用。主要体现在存储引擎的架构上，插件式的存储引擎架构将查询处理和其它的系统任务以及数据的存储提取相分离。这种架构可以根据业务的需求和实际需要选择合适的存储引擎。
 
-![image-20201123095017572](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201123095017572.png)
+![image-20201123095017572](/images/2020112212.png)
 
 
 
@@ -327,7 +327,7 @@ SQL语句在查询之前会使用查询优化器对查询进行优化。就是�
 
 **查询说明：**
 
-**![img](https://img2018.cnblogs.com/blog/1491092/201906/1491092-20190604210526387-1627086664.png)**
+**![img](/images/2020112213.png)**
 
 首先，mysql的查询流程大致是：
 
@@ -359,7 +359,7 @@ SQL语句在查询之前会使用查询优化器对查询进行优化。就是�
 
 MyISAM和InnoDB对比：
 
-![image-20201123100931321](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201123100931321.png)
+![image-20201123100931321](/images/2020112214.png)
 
 
 
@@ -414,11 +414,15 @@ LIMIT <limit_number>
 
 **总结：**
 
-![img](https://images2015.cnblogs.com/blog/1054685/201706/1054685-20170626154318664-711238691.jpg)
+![img](/images/2020112215.png)
 
 Join图
 
-![img](https://images2015.cnblogs.com/blog/1054685/201706/1054685-20170626113414446-2016950911.jpg)
+**内连接**：结果仅包含符合连接条件的两表中的行。
+
+**外连接**：结果包含符合条件的行，同时包含不符合条件的行（分为左外连接、右外连接和全外连接）
+
+![img](/images/2020112216.png)
 
 
 
@@ -738,7 +742,7 @@ mysql> select * from tb_emp e
 >
 >​																																							——《高性能MySQL》
 
-- 索引(Index) 是帮助MySQL高效获取数据的数据结构。**索引的本质就是数据结构**。 索引的目的在于提高查询效率，可以类比字典，可以简单的理解为“排好序的快速查找数据结构”。
+- 索引(Index) 是帮助MySQL高效获取数据的数据结构。**索引的本质就是数据结构**。 **索引的目的在于提高查询效率**，可以类比字典，可以简单的理解为“排好序的快速查找数据结构”。
 - 在数据本身之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用(指向)数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构就是索引。
 - 一般来说索引本身也很大，不可能全部存储在内存中，因此索引往往以索引文件的形式存储在磁盘上。
 - 我们平时所说的索引，如果没有特别指明，都是指B树结构组织的索引。
@@ -747,7 +751,7 @@ mysql> select * from tb_emp e
 
 **二叉树算法图：**
 
-**[![img](https://images2015.cnblogs.com/blog/1054685/201706/1054685-20170627085051383-985324526.png)](https://images2015.cnblogs.com/blog/1054685/201706/1054685-20170627085051383-985324526.png)**
+**[![img](/images/2020112217.png)](https://images2015.cnblogs.com/blog/1054685/201706/1054685-20170627085051383-985324526.png)**
 
 ​    为了加快Col2的查找，可以维护一个右边所示的二叉查找树，每个节点分别包含索引键值和一个指向对应数据记录物理地址的指针，这样就可以运用二叉查找在一定复杂度内获取到相应数据，从而快速的检索出符合条件的记录。
 
@@ -771,7 +775,10 @@ mysql> select * from tb_emp e
 ### 3.4 MySQL索引分类
 
 1. 单值索引：一个索引只包含一个单列，一个表可以有多个单列索引。
+   1. 最简单，通用的一种索引
 2. 唯一索引：索引列的值必须唯一，但允许有空值。
+   1. 银行卡号
+   2. 身份证号
 3. 复合索引：一个索引包含多个列。
 
  
@@ -782,7 +789,7 @@ mysql> select * from tb_emp e
 
 **注意：**一个表只能有一个主键
 
-![mark](http://songwenjie.vip/blog/180802/1c7D2F0f76.png?imageslim)
+![mark](/images/2020112218.png)
 
 
 
@@ -792,15 +799,15 @@ mysql> select * from tb_emp e
 
 可以通过`ALTER TABLE table_name ADD UNIQUE (column);`创建唯一索引
 
-![mark](http://songwenjie.vip/blog/180802/DBdFeKE8Fk.png?imageslim)
+![mark](/images/2020112219.png)
 
-![mark](http://songwenjie.vip/blog/180802/L2jl91b6J6.png?imageslim)
+![mark](/images/2020112220.png)
 
 可以通过`ALTER TABLE table_name ADD UNIQUE (column1,column2);`创建唯一组合索引
 
-![mark](http://songwenjie.vip/blog/180802/mihd7Hm5i6.png?imageslim)
+![mark](/images/2020112221.png)
 
-![mark](http://songwenjie.vip/blog/180802/bJbdFA9AcL.png?imageslim)
+![mark](/images/2020112222.png)
 
 #### 3.普通索引 INDEX
 
@@ -808,9 +815,9 @@ mysql> select * from tb_emp e
 
 可以通过`ALTER TABLE table_name ADD INDEX index_name (column);`创建普通索引
 
-![mark](http://songwenjie.vip/blog/180802/17CmJIIJhD.png?imageslim)
+![mark](/images/2020112223.png)
 
-![mark](http://songwenjie.vip/blog/180802/4fA7L6kBBm.png?imageslim)
+![mark](/images/2020112224.png)
 
 #### 4.组合索引 INDEX
 
@@ -818,9 +825,9 @@ mysql> select * from tb_emp e
 
 可以通过`ALTER TABLE table_name ADD INDEX index_name(column1, column2, column3);`创建组合索引
 
-![mark](http://songwenjie.vip/blog/180802/CLGIKiAC6J.png?imageslim)
+![mark](/images/2020112225.png)
 
-![mark](http://songwenjie.vip/blog/180802/295B9bGi67.png?imageslim)
+![mark](/images/2020112226.png)
 
 #### 5.全文索引 FULLTEXT
 
@@ -828,9 +835,9 @@ mysql> select * from tb_emp e
 
 可以通过`ALTER TABLE table_name ADD FULLTEXT (column);`创建全文索引
 
-![mark](http://songwenjie.vip/blog/180802/AjfLLkhdH1.png?imageslim)
+![mark](/images/2020112227.png)
 
-![mark](http://songwenjie.vip/blog/180802/bA1a1m49cL.png?imageslim)
+![mark](/images/2020112228.png)
 
 索引一经创建不能修改，如果要修改索引，只能删除重建。可以使用`DROP INDEX index_name ON table_name;`删除索引。
 
@@ -838,31 +845,29 @@ mysql> select * from tb_emp e
 
 ### 3.5 索引的基本语法
 
-#### 创建：
+#### 创建
 
-```
+```sql
 CREATE [UNIQUE] INDEX indexName ON tableName(colName(length));。——如果是CHAR、VARCHAR类型，length可以小于字段实际长度，若是BLOB和TEXT类型，必须指定length。
 
 ALTER tableName ADD [UNIQUE] INDEX indexName ON (colName(length));。
 ```
 
-#### 删除：
+#### 删除
 
-```
+```sql
 DROP INDEX [indexName] ON tableName;　　
 ```
 
-#### 查看：
+#### 查看
 
-```
+```sql
 SHOW INDEX FROM tableName;
 ```
 
+#### 使用ALTER命令四种方式添加数据表的索引
 
-
-#### 使用ALTER命令四种方式添加数据表的索引：
-
-```
+```sql
 ALTER TABLE tableName ADD PRIMARY KEY(column_list); 该语句添加一个主键，这意味着索引值必须唯一，且不能为null。
 ALTER TABLE tableName ADD UNIQUE indexName(column_list);该语句创建索引的值必须唯一(null除外，null可能会出现多次)。
 ALTER TABLE tableName ADD INDEX indexName(column_list);该语句添加普通索引，索引值可出现多次。
@@ -871,7 +876,7 @@ AKTER TABLE tableName ADD FULLTEXT indexName(column_list);该语句指定索引�
 
  
 
-### 3.6 MySQL索引结构：
+### 3.6 MySQL索引结构
 
 1. **BTree索引**
 
@@ -907,7 +912,7 @@ AKTER TABLE tableName ADD FULLTEXT indexName(column_list);该语句指定索引�
 3. 数据重复且分布平均的表字段，因此应该只为经常查询和经常排序的数据列建立索引。
    注意，如果某个数据列包含许多重复的内容，为它建立索引就没有太大的实际效果。
 
-   ![image-20201129201618523](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201129201618523.png)
+   ![image-20201129201618523](/images/2020112229.png)
 
 
 
@@ -963,7 +968,7 @@ Explain+SQL语句
 
 执行计划包含的信息
 
-![img](https://images2018.cnblogs.com/blog/512541/201808/512541-20180803142201303-545775900.png)
+![img](/images/2020112230.png)
 
 expain出来的信息有10列，分别是id、select_type、table、type、possible_keys、key、key_len、ref、rows、Extra
 
@@ -994,15 +999,15 @@ SELECT识别符。这是SELECT的查询序列号
 
 ​		1.id相同时，执行顺序由上至下
 
-![image-20201202131914359](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201202131914359.png)
+![image-20201202131914359](/images/2020112231.png)
 
 ​		2.如果是子查询，id的序号会递增，id值越大优先级越高，越先被执行
 
-![image-20201202131931919](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201202131931919.png)
+![image-20201202131931919](/images/2020112232.png)
 
 ​		3.id如果相同，可以认为是一组，从上往下顺序执行；在所有组中，id值越大，优先级越高，越先执行
 
-![image-20201202131954051](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201202131954051.png)
+![image-20201202131954051](/images/2020112233.png)
 
 
 
@@ -1040,7 +1045,7 @@ SELECT识别符。这是SELECT的查询序列号
 
 对表访问方式，表示MySQL在表中找到所需行的方式，又称**访问类型**。
 
-![image-20201202132947918](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201202132947918.png)
+![image-20201202132947918](/images/2020112234.png)
 
 性能从最好到最差依次是：**system>const>eq_ref>ref>range>index>ALL**
 
@@ -1118,7 +1123,7 @@ ALL：Full Table Scan， MySQL将遍历全表以找到匹配的行
 
 ​						**覆盖索引（Covering Index）**
 
-![image-20201202134700929](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201202134700929.png)
+![image-20201202134700929](/images/2020112235.png)
 
 4.Using where:不用读取表中所有信息，仅通过索引就可以获取所需数据，这发生在对表的全部的请求列都是同一个索引的部分的时候，表示mysql服务器将在存储引擎检索行后再进行过滤
 
@@ -1149,17 +1154,19 @@ ALL：Full Table Scan， MySQL将遍历全表以找到匹配的行
 
 
 
-热身case：
+**热身case**：
 
-![image-20201202134800435](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201202134800435.png)
+![image-20201202134800435](/images/2020112236.png)
 
-![image-20201202134808051](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201202134808051.png)
+
+
+![image-20201202134808051](/images/2020112237.png)
 
 
 
 ## 5.索引优化
 
-
+索引分析之后进行索引优化
 
 ### 索引分析
 
@@ -1183,47 +1190,1113 @@ ALL：Full Table Scan， MySQL将遍历全表以找到匹配的行
 
 # 三.查询截取分析
 
-> 联表查询时始终以小结果集驱动大结果集：https://www.cnblogs.com/shamo89/p/8733025.html
+> 联表查询时始终以小结果集驱动大结果集:https://www.cnblogs.com/shamo89/p/8733025.html
 >
-> MySQL性能调优——Query 的优化：https://www.cnblogs.com/shamo89/p/8733139.html
->
-> MySQL索引原理及慢查询优化：https://tech.meituan.com/2014/06/30/mysql-index.html
+> MySQL性能调优——Query 的优化:https://www.cnblogs.com/shamo89/p/8733139.html
 
-## 查询优化
+## 3.1 查询优化
 
+### 3.1.1 分析方法
 
-
-## 慢查询日志
-
-
-
-## 批量数据脚本
+1. 慢查询的开启并捕获
+2. explain+慢SQL分析
+3. `show profile`查询SQL在MySQL服务器里面的执行细节和生命周期情况
+4. SQL数据库服务器的参数调优
 
 
 
-## Show profiles
+### 3.1.2优化原则
+
+**小表驱动大表**（即小的数据集驱动大的数据集）
+
+in和exists的使用：
+
+- B表的数据集必须小于A表数据集的时候，in优于exists
+
+```sql
+select * from A where id in (select id from B)
+```
+
+- A表的数据集小于B表数据集的时候，exists优于in
+
+```sql
+select * from A where exists (select 1 from B where A.id = B.id)
+```
+
+**注意**：A表与B表的ID字段应建立索引
 
 
 
-## 全局查询日志
+**EXISTS的使用**
+
+```sql
+select ... from table where exists (子查询)
+```
+
+理解为：将主查询的数据，放到子查询中做条件验证，将验证的结果(true或false)来决定主查询的数据结果是否得以保留
+
+**注意：**
+
+1. EXISTS（subquery）只返回TRUE或FALSE，因此子查询中的SELECT * 也可以是SELECT 1或SELECT 'X'，官方说法是实际执行会忽略SELECT清单，因此没有区别。
+2. EXISTS子查询的实际查询执行过程经过了优化而不是我们理解上的逐条对比，如果担忧效率问题，可进行实际检验以确定是否有效率问题。
+3. EXISTS子查询往往也可以用条件表达式、其他子查询或者JOIN来替代，何种最优需要具体问题具体分析。
 
 
 
+### 3.1.3 ORDER BY关键字优化
 
+SQL支持两种方式的排序，`FileSort`和`Index`
+
+- ORDER BY子句，尽量使用index方式排序，避免使用FileSort方式排序
+  　MySQL支持二种方式的排序，FileSort和Index，Index效率高，它指MySQL扫描索引本身完成排序。FileSort方式效率较低。(用explain可以在extra字段里看到Using index/filesort)
+    　Order By满足两种情况，会使用Index方式排序
+    　　　1.Order by语句使用索引最左前列
+    　　　2.使用where子句与Order by子句条件组合满足索引最左前列。
+  
+- 尽可能在索引列上完成排序操作，遵照索引建的最佳左前缀
+- 如果不在索引列上，fileSort有两种算法：mysql就要启动**双路排序**和**单路排序**
+  　　**双路排序**：MySQL4.1之前是使用双路排序，字面意思就是 **两次扫描磁盘**，最终得到数据，读取行指针和orderby列，对他们进行排序，然后扫描已经排序好的列表，按照列表中的值重新从列表中读取对应的数据输出。从磁盘取排序字段，在buffer进行排序，再从磁盘取其他字段。取一批数据，要对磁盘进行了两次扫描，众所周知，I/O是很耗时的，所以在mysql4.1后，出现了改进算法，就是单路排序
+    　　**单路排序**：从磁盘读取查询需要的所有列，按照order by列在buffer对它们进行排序，然后扫描排序后的列表进行输出，它的效率更快一些，避免了第二次读取数据。并且把随机IO变成了顺序IO，但是它会使用更多的空间，因为它把每一行都保存在内存中了。
+    　　结论及引申出的问题：由于单路是后出的，总体而言好过双路，但是单路也有问题。
+
+> 单路的问题
+> 　　在sort_buffer中，方法B比方法A要多占用很多空间，因为方法B是把所有字段都取出，所以有可能取出的数据的总大小超出了sort_buffer的容量，导致每次只能取sort_buffer容量大小的数据，进行排序(创建tmp文件，多路合并),排完再取sort_buffer容量大小，再排…..从而多次IO.
+> 　　本来想省一次IO操作，反而导致了大量的I/O操作，反而得不偿失。
+
+- 总结
+  **MySql两种排序方式：文件排序(filesort)或扫描有序索引排序(index)**
+  **MySql能为排序与查询使用相同的索引**
+
+```sql
+KEY a_b_c(a, b, c)
+ 
+order by 能使用索引最左前缀
+- order by a
+- order by a, b
+- order by a desc, c desc
+ 
+如果where使用索引的最左前缀定义为常量，则order by 能使用索引
+- where a = const order by b, c
+- where a = const and b = const order by c
+- where a = const order by b,c
+- where a = const and b > const order by b, c
+ 
+不能使用索引进行排序
+- order by a asc, b desc, c desc /* 排序不一致 */
+- where g = const order by b, c /* 丢失a索引 */
+- where a = const order by c /* 丢失b索引 */
+- where a = const order by a, d /* d不是索引的一部分 */
+- where a in (..) order by b, c /* 对于排序来说，多个相等条件也是范围查询(in 也是范围查询)！！ */
+```
+
+### 3.1.4 GROUP BY关键字优化
+
+基本与 order by 优化一致
+
+1. group by 实质是先排序后分组，遵照索引建的最佳左前缀
+2. 当无法使用索引列，增大 `max_length_for_sort_data` 参数的设置 + 增大`sort_buffer_size`参数的设置
+3. where高于having，能写在where限定的条件就不要去having限定了。
+
+## 3.2 慢查询日志
+
+### 3.2.1 是什么
+
+　　MySql的慢查询日志是MySQL提供的一种日志记录，它用来记录在MySQL中响应时间超过阀值的语句，具体指运行时间超过long_query_time值的SQL，则会被记录到慢查询日志中
+　　long_query_time 的默认值为10，意思是运行10秒以上的语句。
+　　由它来查看哪些SQL超出了我们的最大忍耐时间值，比如一条sql执行超过5秒种，我们就算慢SQL，希望能收集超过5秒的sql，结合之前explain进行全面分析。 　　
+
+### 3.2.2 怎么用
+
+1.说明
+　　**默认情况下，MySQL数据库没有开启慢查询日志**，需要我们手动来设置这个参数。
+　　**当然，如果不是调优需要的话，一般不建议启动该参数**，因为开启慢查询日志会或多或少带来一定的性能影响。慢查询日志支持将日志记录写入文件。
+
+2.查看是否开启及如何开启
+　　默认：`show variables like '%slow_query_log%';`
+　　开启：`set global show_query_log=1;`，这个 **只对当前数据库生效**，如果MySQL重启后则会失效。如果要永久生效，必须修改配置文件my.cnf(其他系统变量也是如此)
+
+3.开启慢查询后，什么样的SQL才会记录到慢查询日志里面呢？
+　　这个是由参数long_query_time控制，默认情况下long_query_time的值为10秒，
+　　命令：`show variables like ‘long_query_time%;’`。可以使用命令修改，也可以在my.cnf参数里面修改。
+　　假如运行时间正好等于 `long_query_time `的情况，并不会被记录。也就是说，在mysql源码里是 **判断>long_query_time，而非>=**.
+
+### 3.2.3 日志分析工具 mysqldumpslow
+
+　　在生产环境中，如果要手工分析日志，查找、分析SQL，显然是个体力活，MySQL提供了日志分析工具 mysqldumpslow
+查看 mysqldumpslow 的帮助信息：`mysqldumpslow --help`
+　　s: 表示按何种方式排序
+　　c: 访问次数
+　　l: 锁定时间
+　　r: 返回记录
+　　t: 查询时间
+　　al: 平均锁定时间
+　　ar: 平均返回记录数
+　　at: 平均查询时间
+　　t: 返回前面多少条的数据
+　　g: 后边搭配一个正则匹配模式，大小写不敏感的。
+
+```sql
+得到返回记录集最多的10个SQL
+mysqldumpslow -s r -t 10 /var/lib/mysql/show.log
+ 
+得到访问次数最多的10个SQL
+mysqldumpslow -s c -t 10 /var/lig/mysql/show.log
+ 
+得到按照时间排序的前10条里面含有左连接的查询语句
+mysqldumpslow -s t -t 10 -g "left join" /var/lig/mysql/show.log
+ 
+另外建议在使用这些命令时结构 | 和more使用，否则有可能出现爆屏情况
+mysqldumpslow -s r -t 10 /var/lig/mysql/show.log | more
+```
+
+## 3.3 批量数据脚本
+
+往表里插入1000W数据
+
+### 3.3.1 建表
+
+```sql
+# 新建库
+create database bigData;
+use bigData;
+ 
+#1 建表dept
+CREATE TABLE dept(  
+    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,  
+    deptno MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,   
+    dname VARCHAR(20) NOT NULL DEFAULT "",  
+    loc VARCHAR(13) NOT NULL DEFAULT ""  
+) ENGINE=INNODB DEFAULT CHARSET=UTF8 ;  
+
+#2 建表emp
+CREATE TABLE emp  
+(  
+    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,  
+    empno MEDIUMINT UNSIGNED NOT NULL DEFAULT 0, /*编号*/  
+    ename VARCHAR(20) NOT NULL DEFAULT "", /*名字*/  
+    job VARCHAR(9) NOT NULL DEFAULT "",/*工作*/  
+    mgr MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,/*上级编号*/  
+    hiredate DATE NOT NULL,/*入职时间*/  
+    sal DECIMAL(7,2) NOT NULL,/*薪水*/  
+    comm DECIMAL(7,2) NOT NULL,/*红利*/  
+    deptno MEDIUMINT UNSIGNED NOT NULL DEFAULT 0 /*部门编号*/  
+)ENGINE=INNODB DEFAULT CHARSET=UTF8 ;
+```
+
+### 3.3.2 设置参数`log_trust_function_createors`
+
+​		当开启二进制日志后，如果变量`log_bin_trust_function_creators`为OFF，那么创建或修改存储函数就会报“ERROR 1418 (HY000): This function has none of DETERMINISTIC, NO SQL, or READS SQL DATA in its declaration and binary logging is enabled (you *might* want to use the less safe log_bin_trust_function_creators variable)”这样的错误。因为二进制日志的一个重要功能是用于`主从复制`，而存储函数有可能导致主从的数据不一致。
+
+​		所以当开启二进制日志后，参数log_bin_trust_function_creators就会生效，限制存储函数的创建、修改、调用。
+
+```
+show variables like 'log_bin_trust_function_creators';
+set global log_bin_trust_function_creators=1;
+```
+
+这样添加了参数以后，如果mysqld重启，上述参数又会消失，永久方法：
+
+```
+windows下my.ini[mysqld]加上log_bin_trust_function_creators=1
+linux下 /etc/my.cnf下my.cnf[mysqld]加上log_bin_trust_function_creators=1
+```
+
+### 3.3.3 创建函数保证每条数据都不同
+
+- 随机产生字符串
+
+  ```sql
+  DELIMITER $$
+  CREATE FUNCTION rand_string(n INT) RETURNS VARCHAR(255)
+  BEGIN    ##方法开始
+   DECLARE chars_str VARCHAR(100) DEFAULT   'abcdefghijklmnopqrstuvwxyzABCDEFJHIJKLMNOPQRSTUVWXYZ'; 
+   ##声明一个 字符窜长度为 100 的变量 chars_str ,默认值 
+   DECLARE return_str VARCHAR(255) DEFAULT '';
+   DECLARE i INT DEFAULT 0;
+  ##循环开始
+   WHILE i < n DO  
+   SET return_str =CONCAT(return_str,SUBSTRING(chars_str,FLOOR(1+RAND()*52),1));
+  ##concat 连接函数  ，substring(a,index,length) 从index处开始截取
+   SET i = i + 1;
+   END WHILE;
+   RETURN return_str;
+  END $$
+   
+  #假如要删除
+  #drop function rand_string;
+  ```
+
+- 随机产生部门编号
+
+  ```sql
+  #用于随机产生部门编号
+  DELIMITER $$
+  CREATE FUNCTION rand_num( ) 
+  RETURNS INT(5)  
+  BEGIN   
+   DECLARE i INT DEFAULT 0;  
+   SET i = FLOOR(100+RAND()*10);  
+  RETURN i;  
+   END $$
+   
+   
+  #假如要删除
+  #drop function rand_num;
+  ```
+
+### 3.3.4 创建存储过程
+
+- 创建往emp表中插入数据的存储过程
+
+  ```sql
+  DELIMITER $$
+  CREATE PROCEDURE insert_emp10000(IN START INT(10),IN max_num INT(10))  
+  BEGIN  
+  DECLARE i INT DEFAULT 0;   
+  #set autocommit =0 把autocommit设置成0  ；提高执行效率
+   SET autocommit = 0;    
+   REPEAT  ##重复
+   SET i = i + 1;  
+   INSERT INTO emp10000 (empno, ename ,job ,mgr ,hiredate ,sal ,comm ,deptno ) VALUES ((START+i) ,rand_string(6),'SALESMAN',0001,CURDATE(),FLOOR(1+RAND()*20000),FLOOR(1+RAND()*1000),rand_num());  
+   UNTIL i = max_num   ##直到  上面也是一个循环
+   END REPEAT;  ##满足条件后结束循环
+   COMMIT;   ##执行完成后一起提交
+   END $$
+   
+  #删除
+  # DELIMITER ;
+  # drop PROCEDURE insert_emp;
+  ```
+
+  
+
+- 创建往dept表中插入数据的存储过程
+
+  ```sql
+  #执行存储过程，往dept表添加随机数据
+  DELIMITER $$
+  CREATE PROCEDURE insert_dept(IN START INT(10),IN max_num INT(10))  
+  BEGIN  
+  DECLARE i INT DEFAULT 0;   
+   SET autocommit = 0;    
+   REPEAT  
+   SET i = i + 1;  
+   INSERT INTO dept (deptno ,dname,loc ) VALUES (START +i ,rand_string(10),rand_string(8));  
+   UNTIL i = max_num  
+   END REPEAT;  
+   COMMIT;  
+   END $$ 
+   
+  #删除
+  # DELIMITER ;
+  # drop PROCEDURE insert_dept;
+  ```
+
+### 3.3.5 调用存储过程
+
+```sql
+DELIMITER ;
+CALL insert_dept(100,10); 
+
+#执行存储过程，往emp表添加50万条数据
+DELIMITER ;    #将 结束标志换回 ;
+CALL insert_emp(100001,500000); 
+CALL insert_emp10000(100001,10000);
+```
+
+## 3.4 show profile
+
+这个是sql分析最强大的
+默认情况下，参数处于关闭状态，并保存最近15次的运行结果
+
+### 3.4.1 是什么
+是mysql提供可以用来分析当前会话中语句执行的资源消耗情况。可以用于SQL的调优的测量
+
+### 3.4.2 分析步骤
+
+1. 是否支持，看看当前的mysql版本是否支持
+   `show variables like 'profiling%'`
+
+2. 开启功能，默认是关闭，使用前需要开启
+   `set profiling=on`
+
+3. 运行SQL
+   `select * from emp group by id%10 limit 1500000`
+   `select * from emp group by id%20 order by 5`
+
+4. 查看结果，`show profiles`
+
+5. 诊断SQL，`show profile cpu, block io for query 2` 后的数字是 show profiles 里的query_id
+   **参数备注**：
+
+   ```
+   all: 显示所有的开销信息
+   block io: 显示块IO相关开销
+   context switches: 上下文切换相关开销
+   cpu: 显示CPU相关开销信息
+   ipc: 显示发送和接收相关开销信息
+   memory: 显示内存相关开销信息
+   page faults: 显示页面错误相关开销信息
+   source: 显示和source_function, source_file, souce_line相关的开销信息
+   swaps: 显示交换次数相关开销的信息
+   ```
+
+6. 日常开发需要注意的结论
+
+   ```
+   converting HEAP to MyISAM 查询结果太长，内存都不够用了往磁盘上搬了。
+   Creating tmp table 创建临时表：copy数据到临时表，用完再删除
+   Copying to tmp table on disk 把内存中临时表复制到磁盘，很危险！！！
+   locaked
+   ```
+
+## 3.5 全局查询日志
+
+永远不要在生产环境上打开，测试时可以
+
+### 3.5.1 配置启用
+
+在mysql的my.cnf中，设置如下：
+
+```sql
+# 开启
+general_log=1 
+
+# 记录日志文件的路径
+general_log_file=/path/logfile 
+
+# 输出格式
+log_output=FILE
+```
+
+
+### 3.5.2 编码启用
+
+```sql
+set global general_log=1;
+set global log_output='TABLE';
+```
+
+此后，你所编写的sql语句，将会记录到mysql库里的general_log表。 
+可以用下面的命令查看
+
+```sql
+select * from mysql.general_log;
+```
 
 
 
 # 四.MySQL锁机制
 
-## 概述
+## 4.1 概述
+
+### 4.1.1 锁的定义
+
+1. 锁是计算机协调**多个进程或线程并发访问某一资源的机制**。
+2. 在数据库中，除传统的计算资源（如CPU、RAM、I/O等）的争用以外，数据也是一种供许多用户共享的资源。
+3. 如何保证数据并发访问的一致性、有效性是所有数据库必须解决的一个问题，锁冲突也是影响数据库并发访问性能的一个重要因素。
+4. 从这个角度来说，锁对数据库而言显得尤其重要，也更加复杂。
+
+### 4.1.2 锁的分类
+
+1. 从数据操作的类型（读、写）分
+   - **读锁**（共享锁）：针对同一份数据，多个读操作可以同时进行而不会互相影响
+   - **写锁**（排它锁）：当前写操作没有完成前，它会阻断其他写锁和读锁。
+2. 从对数据操作的颗粒度
+   - 表锁
+   - 行锁
+
+## 4.2 表锁
+
+**表锁的特点**:
+
+**偏向MyISAM存储引擎**，开销小，加锁快，无死锁，锁定粒度大，**发生锁冲突的概率最高，并发最低**
+
+### 4.2.1 表锁案例分析
+
+**创建表**
+
+- 建表 SQL：**引擎选择 myisam**
+
+```sql
+create table mylock (
+    id int not null primary key auto_increment,
+    name varchar(20) default ''
+) engine myisam;
+
+insert into mylock(name) values('a');
+insert into mylock(name) values('b');
+insert into mylock(name) values('c');
+insert into mylock(name) values('d');
+insert into mylock(name) values('e');
+
+select * from mylock;
+```
+
+- mylock 表中的测试数据
+
+```sql
+mysql> select * from mylock;
++----+------+
+| id | name |
++----+------+
+|  1 | a    |
+|  2 | b    |
+|  3 | c    |
+|  4 | d    |
+|  5 | e    |
++----+------+
+5 rows in set (0.00 sec)
+```
+
+**手动加锁和释放锁**
+
+- 查看当前数据库中表的上锁情况：`show open tables;`，0 表示未上锁
+
+```sql
+mysql> show open tables;
++--------------------+----------------------------------------------------+--------+-------------+
+| Database           | Table                                              | In_use | Name_locked |
++--------------------+----------------------------------------------------+--------+-------------+
+| performance_schema | events_waits_history                               |      0 |           0 |
+| performance_schema | events_waits_summary_global_by_event_name          |      0 |           0 |
+| performance_schema | setup_timers                                       |      0 |           0 |
+| performance_schema | events_waits_history_long                          |      0 |           0 |
+| performance_schema | events_statements_summary_by_digest                |      0 |           0 |
+| performance_schema | mutex_instances                                    |      0 |           0 |
+| performance_schema | events_waits_summary_by_instance                   |      0 |           0 |
+| performance_schema | events_stages_history                              |      0 |           0 |
+| mysql              | db                                                 |      0 |           0 |
+| performance_schema | events_waits_summary_by_host_by_event_name         |      0 |           0 |
+| mysql              | user                                               |      0 |           0 |
+| mysql              | columns_priv                                       |      0 |           0 |
+| performance_schema | events_statements_history_long                     |      0 |           0 |
+| performance_schema | performance_timers                                 |      0 |           0 |
+| performance_schema | file_instances                                     |      0 |           0 |
+| performance_schema | events_stages_summary_by_user_by_event_name        |      0 |           0 |
+| performance_schema | events_stages_history_long                         |      0 |           0 |
+| performance_schema | setup_actors                                       |      0 |           0 |
+| performance_schema | cond_instances                                     |      0 |           0 |
+| mysql              | proxies_priv                                       |      0 |           0 |
+| performance_schema | socket_summary_by_instance                         |      0 |           0 |
+| performance_schema | events_statements_current                          |      0 |           0 |
+| mysql              | event                                              |      0 |           0 |
+| performance_schema | session_connect_attrs                              |      0 |           0 |
+| mysql              | plugin                                             |      0 |           0 |
+| performance_schema | threads                                            |      0 |           0 |
+| mysql              | time_zone_transition_type                          |      0 |           0 |
+| mysql              | time_zone_name                                     |      0 |           0 |
+| performance_schema | file_summary_by_event_name                         |      0 |           0 |
+| performance_schema | events_waits_summary_by_user_by_event_name         |      0 |           0 |
+| performance_schema | socket_summary_by_event_name                       |      0 |           0 |
+| performance_schema | users                                              |      0 |           0 |
+| mysql              | servers                                            |      0 |           0 |
+| performance_schema | events_waits_summary_by_account_by_event_name      |      0 |           0 |
+| db01               | tbl_emp                                            |      0 |           0 |
+| performance_schema | events_statements_summary_by_host_by_event_name    |      0 |           0 |
+| db01               | tblA                                               |      0 |           0 |
+| performance_schema | table_io_waits_summary_by_index_usage              |      0 |           0 |
+| performance_schema | events_waits_current                               |      0 |           0 |
+| db01               | user                                               |      0 |           0 |
+| mysql              | procs_priv                                         |      0 |           0 |
+| performance_schema | events_statements_summary_by_thread_by_event_name  |      0 |           0 |
+| db01               | emp                                                |      0 |           0 |
+| db01               | tbl_user                                           |      0 |           0 |
+| db01               | test03                                             |      0 |           0 |
+| mysql              | slow_log                                           |      0 |           0 |
+| performance_schema | file_summary_by_instance                           |      0 |           0 |
+| db01               | article                                            |      0 |           0 |
+| performance_schema | objects_summary_global_by_type                     |      0 |           0 |
+| db01               | phone                                              |      0 |           0 |
+| performance_schema | events_waits_summary_by_thread_by_event_name       |      0 |           0 |
+| performance_schema | setup_consumers                                    |      0 |           0 |
+| performance_schema | socket_instances                                   |      0 |           0 |
+| performance_schema | rwlock_instances                                   |      0 |           0 |
+| db01               | tbl_dept                                           |      0 |           0 |
+| performance_schema | events_statements_summary_by_user_by_event_name    |      0 |           0 |
+| db01               | staffs                                             |      0 |           0 |
+| db01               | class                                              |      0 |           0 |
+| mysql              | general_log                                        |      0 |           0 |
+| performance_schema | events_stages_summary_global_by_event_name         |      0 |           0 |
+| performance_schema | events_stages_summary_by_account_by_event_name     |      0 |           0 |
+| performance_schema | events_statements_summary_by_account_by_event_name |      0 |           0 |
+| performance_schema | table_lock_waits_summary_by_table                  |      0 |           0 |
+| performance_schema | hosts                                              |      0 |           0 |
+| performance_schema | setup_objects                                      |      0 |           0 |
+| performance_schema | events_stages_current                              |      0 |           0 |
+| mysql              | time_zone                                          |      0 |           0 |
+| mysql              | tables_priv                                        |      0 |           0 |
+| performance_schema | table_io_waits_summary_by_table                    |      0 |           0 |
+| mysql              | time_zone_leap_second                              |      0 |           0 |
+| db01               | book                                               |      0 |           0 |
+| performance_schema | session_account_connect_attrs                      |      0 |           0 |
+| db01               | mylock                                             |      0 |           0 |
+| mysql              | func                                               |      0 |           0 |
+| performance_schema | events_statements_summary_global_by_event_name     |      0 |           0 |
+| performance_schema | events_statements_history                          |      0 |           0 |
+| performance_schema | accounts                                           |      0 |           0 |
+| mysql              | time_zone_transition                               |      0 |           0 |
+| db01               | dept                                               |      0 |           0 |
+| performance_schema | events_stages_summary_by_host_by_event_name        |      0 |           0 |
+| performance_schema | events_stages_summary_by_thread_by_event_name      |      0 |           0 |
+| mysql              | proc                                               |      0 |           0 |
+| performance_schema | setup_instruments                                  |      0 |           0 |
+| performance_schema | host_cache                                         |      0 |           0 |
++--------------------+----------------------------------------------------+--------+-------------+
+84 rows in set (0.00 sec)
+
+```
+
+- 添加锁
+
+```sql
+lock table 表名1 read(write), 表名2 read(write), ...;
+```
+
+- 释放表锁
+
+```sql
+unlock tables;
+```
+
+#### 读锁示例
+
+- 在 session 1 会话中，给 mylock 表加个读锁
+
+```sql
+mysql> lock table mylock read;
+Query OK, 0 rows affected (0.00 sec)
+```
+
+- 在 session1 会话中能不能读取 mylock 表：可以读
+
+```sql
+################# session1 中的操作 #################
+
+mysql> select * from mylock;
++----+------+
+| id | name |
++----+------+
+|  1 | a    |
+|  2 | b    |
+|  3 | c    |
+|  4 | d    |
+|  5 | e    |
++----+------+
+5 rows in set (0.00 sec)
+```
+
+- 在 session1 会话中能不能读取 book 表：并不行。。。
+
+```sql
+################# session1 中的操作 #################
+
+mysql> select * from book;
+ERROR 1100 (HY000): Table 'book' was not locked with LOCK TABLES
+```
+
+- 在 session2 会话中能不能读取 mylock 表：可以读
+
+```sql
+################# session2 中的操作 #################
+
+mysql> select * from mylock;
++----+------+
+| id | name |
++----+------+
+|  1 | a    |
+|  2 | b    |
+|  3 | c    |
+|  4 | d    |
+|  5 | e    |
++----+------+
+5 rows in set (0.00 sec)
+```
+
+- 在 session1 会话中能不能修改 mylock 表：并不行。。。
+
+```sql
+################# session1 中的操作 #################
+
+mysql> update mylock set name='a2' where id=1;
+ERROR 1099 (HY000): Table 'mylock' was locked with a READ lock and can't be updated
+```
+
+- 在 session2 会话中能不能修改 mylock 表：阻塞，一旦 mylock 表锁释放，则会执行修改操作
+
+```sql
+################# session2 中的操作 #################
+
+mysql> update mylock set name='a2' where id=1;
+# 在这里阻塞着呢~~~
+```
+
+**结论**
+
+1. 当前 session 和其他 session 均可以读取加了读锁的表
+2. 当前 session 不能读取其他表，并且不能修改加了读锁的表
+3. 其他 session 想要修改加了读锁的表，必须等待其读锁释放
+
+#### 写锁示例
+
+- 在 session 1 会话中，给 mylock 表加个写锁
+
+```sql
+mysql> lock table mylock write;
+Query OK, 0 rows affected (0.00 sec)
+```
+
+- 在 session1 会话中能不能读取 mylock 表：阔以
+
+```sql
+################# session1 中的操作 #################
+
+mysql> select * from mylock;
++----+------+
+| id | name |
++----+------+
+|  1 | a2   |
+|  2 | b    |
+|  3 | c    |
+|  4 | d    |
+|  5 | e    |
++----+------+
+5 rows in set (0.00 sec)
+```
+
+- 在 session1 会话中能不能读取 book 表：不阔以
+
+```sql
+################# session1 中的操作 #################
+
+mysql> select * from book;
+ERROR 1100 (HY000): Table 'book' was not locked with LOCK TABLES
+```
+
+- 在 session1 会话中能不能修改 mylock 表：当然可以啦，加写锁就是为了修改呀
+
+```
+################# session1 中的操作 #################
+
+mysql> update mylock set name='a2' where id=1;
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 1  Changed: 0  Warnings: 0
+```
+
+- 在 session2 会话中能不能读取 mylock 表：
+
+```sql
+################# session2 中的操作 #################
+
+mysql> select * from mylock;
+# 在这里阻塞着呢~~~
+```
+
+**结论**
+
+1. 当前 session 可以读取和修改加了写锁的表
+2. 当前 session 不能读取其他表
+3. 其他 session 想要读取加了写锁的表，必须等待其读锁释放
+
+> **案例结论**
+
+1. MyISAM在执行查询语句（SELECT）前，会自动给涉及的所有表加**读锁**，在执行增删改操作前，会自动给涉及的表加**写锁**。
+2. MySQL的表级锁有两种模式：
+   - 表共享读锁（Table Read Lock）
+   - 表独占写锁（Table Write Lock）
+
+![image-20200805154049814](/images/2020112238.png)
+
+------
+
+结论：结合上表，所以对MyISAM表进行操作，会有以下情况：
+
+1. 对MyISAM表的读操作（加读锁），不会阻塞其他进程对同一表的读请求，但会阻塞对同一表的写请求。只有当读锁释放后，才会执行其它进程的写操作。
+2. 对MyISAM表的写操作（加写锁），会阻塞其他进程对同一表的读和写操作，只有当写锁释放后，才会执行其它进程的读写操作
+3. 简而言之，就是读锁会阻塞写，但是不会堵塞读。而写锁则会把读和写都堵塞。
+
+### 4.2.2 表锁分析
+
+- 查看哪些表被锁了，0 表示未锁，1 表示被锁
+
+```sql
+show open tables;
+```
+
+------
+
+【如何分析表锁定】可以通过检查table_locks_waited和table_locks_immediate状态变量来分析系统上的表锁定，通过 `show status like 'table%';` 命令查看
+
+1. Table_locks_immediate：产生表级锁定的次数，表示可以立即获取锁的查询次数，每立即获取锁值加1；
+2. Table_locks_waited：出现表级锁定争用而发生等待的次数（不能立即获取锁的次数，每等待一次锁值加1），此值高则说明存在着较严重的表级锁争用情况；
+
+```sql
+mysql> show status like 'table%';
++----------------------------+--------+
+| Variable_name              | Value  |
++----------------------------+--------+
+| Table_locks_immediate      | 500440 |
+| Table_locks_waited         | 1      |
+| Table_open_cache_hits      | 500070 |
+| Table_open_cache_misses    | 5      |
+| Table_open_cache_overflows | 0      |
++----------------------------+--------+
+5 rows in set (0.00 sec)
+```
+
+- 此外，Myisam的读写锁调度是写优先，这也是myisam不适合做写为主表的引擎。因为写锁后，其他线程不能做任何操作，**大量的更新会使查询很难得到锁**，从而造成永远阻塞
+
+## 4.3 行锁
+
+**行锁的特点:**
+
+1. **偏向InnoDB存储引擎**，开销大，加锁慢；会出现死锁；**锁定粒度最小，发生锁冲突的概率最低，并发度也最高**。
+2. InnoDB与MyISAM的最大不同有两点：**一是支持事务（TRANSACTION）；二是采用了行级锁**
+
+### 4.3.1 事务复习
+
+> **行锁支持事务，复习下老知识**
+
+**事务（Transation）及其ACID属性**
+
+事务是由一组SQL语句组成的逻辑处理单元，事务具有以下4个属性，通常简称为事务的ACID属性。
+
+1. **原子性**（Atomicity）：事务是一个原子操作单元，其对数据的修改，要么全都执行，要么全都不执行。
+2. **一致性**（Consistent）：在事务开始和完成时，数据都必须保持一致状态。这意味着所有相关的数据规则都必须应用于事务的修改，以保持数据的完整性；事务结束时，所有的内部数据结构（如B树索引或双向链表）也都必须是正确的。
+3. **隔离性**（Isolation）：数据库系统提供一定的隔离机制，保证事务在不受外部并发操作影响的“独立”环境执行。这意味着事务处理过程中的中间状态对外部是不可见的，反之亦然。
+4. **持久性**（Durability）：事务院成之后，它对于数据的修改是永久性的，即使出现系统故障也能够保持。
+
+------
+
+**并发事务处理带来的问题**
+
+1. 更新丢失
+
+   （Lost Update）：
+
+   - 当两个或多个事务选择同一行，然后基于最初选定的值更新该行时，由于每个事务都不知道其他事务的存在，就会发生丢失更新问题一一最后的更新覆盖了由其他事务所做的更新。
+   - 例如，两个程序员修改同一java文件。每程序员独立地更改其副本，然后保存更改后的副本，这样就覆盖了原始文档。最后保存其更改副本的编辑人员覆盖前一个程序员所做的更改。
+   - 如果在一个程序员完成并提交事务之前，另一个程序员不能访问同一文件，则可避免此问题。
+
+2. 脏读
+
+   （Dirty Reads）：
+
+   - 一个事务正在对一条记录做修改，在这个事务完成并提交前，这条记录的数据就处于不一致状态；这时，另一个事务也来读取同一条记录，如果不加控制，第二个事务读取了这些“脏”数据，并据此做进一步的处理，就会产生未提交的数据依赖关系。这种现象被形象地叫做”脏读”。
+   - 一句话：事务A读取到了事务B已修改但尚未提交的的数据，还在这个数据基础上做了操作。此时，如果B事务回滚，A读取的数据无效，不符合一致性要求。
+
+3. 不可重复读
+
+   （Non-Repeatable Reads）：
+
+   - 一个事务在读取某些数据后的某个时间，再次读取以前读过的数据，却发现其读出的数据已经发生了改变、或某些记录已经被删除了！这种现象就叫做“不可重复读”。
+   - 一句话：事务A读取到了事务B已经提交的修改数据，不符合隔离性
+
+4. 幻读
+
+   （Phantom Reads）
+
+   - 一个事务按相同的查询条件重新读取以前检索过的数据，却发现其他事务插入了满足其查询条件的新数据，这种现象就称为“幻读一句话：事务A读取到了事务B体提交的新增数据，不符合隔离性。
+   - 多说一句：幻读和脏读有点类似，脏读是事务B里面修改了数据，幻读是事务B里面新增了数据。
+
+------
+
+**事物的隔离级别**
+
+1. 脏读”、“不可重复读”和“幻读”，其实都是数据库读一致性问题，必须由数据库提供一定的事务隔离机制来解决。
+2. 数据库的事务隔离越严格，并发副作用越小，但付出的代价也就越大，因为事务隔离实质上就是使事务在一定程度上“串行化”进行，这显然与“并发”是矛盾的。
+3. 同时，不同的应用对读一致性和事务隔离程度的要求也是不同的，比如许多应用对“不可重复读”和“幻读”并不敏感，可能更关心数据并发访问的能力。
+4. 查看当前数据库的事务隔离级别：`show variables like 'tx_isolation';` mysql 默认是可重复读
+
+![image-20200805155415247](/images/2020112239.png)
+
+### 4.3.2 行锁案例
+
+**行锁案例分析：**
+
+**创建表**
+
+- 建表 SQL
+
+```sql
+CREATE TABLE test_innodb_lock (a INT(11),b VARCHAR(16))ENGINE=INNODB;
+
+INSERT INTO test_innodb_lock VALUES(1,'b2');
+INSERT INTO test_innodb_lock VALUES(3,'3');
+INSERT INTO test_innodb_lock VALUES(4, '4000');
+INSERT INTO test_innodb_lock VALUES(5,'5000');
+INSERT INTO test_innodb_lock VALUES(6, '6000');
+INSERT INTO test_innodb_lock VALUES(7,'7000');
+INSERT INTO test_innodb_lock VALUES(8, '8000');
+INSERT INTO test_innodb_lock VALUES(9,'9000');
+INSERT INTO test_innodb_lock VALUES(1,'b1');
+
+CREATE INDEX test_innodb_a_ind ON test_innodb_lock(a);
+CREATE INDEX test_innodb_lock_b_ind ON test_innodb_lock(b);
+```
+
+- test_innodb_lock 表中的测试数据
+
+```
+mysql> select * from test_innodb_lock;
++------+------+
+| a    | b    |
++------+------+
+|    1 | b2   |
+|    3 | 3    |
+|    4 | 4000 |
+|    5 | 5000 |
+|    6 | 6000 |
+|    7 | 7000 |
+|    8 | 8000 |
+|    9 | 9000 |
+|    1 | b1   |
++------+------+
+9 rows in set (0.00 sec)
+```
 
 
 
+```sql
+mysql> SHOW INDEX FROM test_innodb_lock;
++------------------+------------+------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table            | Non_unique | Key_name               | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++------------------+------------+------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| test_innodb_lock |          1 | test_innodb_a_ind      |            1 | a           | A         |           9 |     NULL | NULL   | YES  | BTREE      |         |               |
+| test_innodb_lock |          1 | test_innodb_lock_b_ind |            1 | b           | A         |           9 |     NULL | NULL   | YES  | BTREE      |         |               |
++------------------+------------+------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+2 rows in set (0.00 sec)
 
+```
 
-## 三锁
+**操作同一行数据：**
 
+- session1 开启事务，修改 test_innodb_lock 中的数据
 
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update test_innodb_lock set b='4001' where a=4;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+```
+
+- session2 开启事务，修改 test_innodb_lock 中同一行数据，将导致 session2 发生阻塞，一旦 session1 提交事务，session2 将执行更新操作
+
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update test_innodb_lock set b='4002' where a=4;
+# 在这儿阻塞着呢~~~
+
+# 时间太长，会报超时错误哦
+mysql> update test_innodb_lock set b='4001' where a=4;
+ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
+```
+
+**操作不同行数据：**
+
+- session1 开启事务，修改 test_innodb_lock 中的数据
+
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update test_innodb_lock set b='4001' where a=4;
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 1  Changed: 0  Warnings: 0
+```
+
+- session2 开启事务，修改 test_innodb_lock 中不同行的数据
+- 由于采用行锁，session2 和 session1 互不干涉，所以 session2 中的修改操作没有阻塞
+
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update test_innodb_lock set b='9001' where a=9;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+```
+
+**无索引导致行锁升级为表锁：**
+
+- session1 开启事务，修改 test_innodb_lock 中的数据，varchar 不用 ’ ’ ，导致系统自动转换类型，导致索引失效
+
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update test_innodb_lock set a=44 where b=4000;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+```
+
+- session2 开启事务，修改 test_innodb_lock 中不同行的数据
+- 由于发生了自动类型转换，索引失效，导致行锁变为表锁
+
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update test_innodb_lock set b='9001' where a=9;
+# 在这儿阻塞着呢~~~
+```
+
+### 4.3.3 间隙锁
+
+**什么是间隙锁：**
+
+1. 当我们用范围条件而不是相等条件检索数据，并请求共享或排他锁时，InnoDB会给符合条件的已有数据记录的索引项加锁；对于键值在条件范围内但并不存在的记录，叫做“间隙（GAP）”
+2. InnoDB也会对这个“间隙”加锁，这种锁机制是所谓的间隙锁（Next-Key锁）
+
+**间隙锁的危害**：
+
+1. 因为Query执行过程中通过过范围查找的话，他会锁定整个范围内所有的索引键值，即使这个键值并不存在。
+2. 间隙锁有一个比较致命的弱点，就是当锁定一个范围键值之后，即使某些不存在的键值也会被无辜的锁定，而造成在锁定的时候无法插入锁定键值范围内的任何数据。在某些场景下这可能会对性能造成很大的危害
+
+------
+
+**间隙锁示例**：
+
+- test_innodb_lock 表中的数据
+
+```sql
+mysql> select * from test_innodb_lock;
++------+------+
+| a    | b    |
++------+------+
+|    1 | b2   |
+|    3 | 3    |
+|    4 | 4000 |
+|    5 | 5000 |
+|    6 | 6000 |
+|    7 | 7000 |
+|    8 | 8000 |
+|    9 | 9000 |
+|    1 | b1   |
++------+------+
+9 rows in set (0.00 sec)
+```
+
+- session1 开启事务，执行修改 a > 1 and a < 6 的数据，这会导致 mysql 将 a = 2 的数据行锁住（虽然表中并没有这行数据）
+
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update test_innodb_lock set b='Heygo' where a>1 and a<6;
+Query OK, 3 rows affected (0.00 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+```
+
+- session2 开启事务，修改 test_innodb_lock 中不同行的数据，也会导致阻塞，直至 session1 提交事务
+
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update test_innodb_lock set b='9001' where a=9;
+# 在这儿阻塞着呢~~~
+```
+
+### 4.3.4 手动行锁
+
+**如何锁定一行:**
+
+- `select xxx ... for update` 锁定某一行后，其它的操作会被阻塞，直到锁定行的会话提交
+- session1 开启事务，手动执行 for update 锁定指定行，待执行完指定操作时再将数据提交
+
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from test_innodb_lock  where a=8 for update;
++------+------+
+| a    | b    |
++------+------+
+|    8 | 8000 |
++------+------+
+1 row in set (0.00 sec)
+```
+
+- session2 开启事务，修改 session1 中被锁定的行，会导致阻塞，直至 session1 提交事务
+
+```sql
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update test_innodb_lock set b='XXX' where a=8;
+# 在这儿阻塞着呢~~~
+```
+
+### 4.3.5 行锁分析
+
+**案例结论:**
+
+1. Innodb存储引擎由于实现了行级锁定，虽然在锁定机制的实现方面所带来的性能损耗可能比表级锁定会要更高一些，但是在整体并发处理能力方面要远远优于MyISAM的表级锁定的。
+2. **当系统并发量较高的时候，Innodb的整体性能和MyISAM相比就会有比较明显的优势了**。
+3. 但是，Innodb的行级锁定同样也有其脆弱的一面，当我们使用不当的时候（索引失效，导致行锁变表锁），可能会让Innodb的整体性能表现不仅不能比MyISAM高，甚至可能会更差。
+
+**行锁分析**:
+
+**如何分析行锁定**
+
+- 通过检查InnoDB_row_lock状态变量来分析系统上的行锁的争夺情况
+
+```sql
+show status like 'innodb_row_lock%';
+
+mysql> show status like 'innodb_row_lock%';
++-------------------------------+--------+
+| Variable_name                 | Value  |
++-------------------------------+--------+
+| Innodb_row_lock_current_waits | 0      |
+| Innodb_row_lock_time          | 212969 |
+| Innodb_row_lock_time_avg      | 42593  |
+| Innodb_row_lock_time_max      | 51034  |
+| Innodb_row_lock_waits         | 5      |
++-------------------------------+--------+
+5 rows in set (0.00 sec)
+```
+
+**对各个状态量的说明如下：**
+
+1. Innodb_row_lock_current_waits：当前正在等待锁定的数量；
+2. Innodb_row_lock_time：从系统启动到现在锁定总时间长度；
+3. Innodb_row_lock_time_avg：每次等待所花平均时间；
+4. Innodb_row_lock_time_max：从系统启动到现在等待最常的一次所花的时间；
+5. Innodb_row_lock_waits：系统启动后到现在总共等待的次数；
+
+------
+
+**对于这5个状态变量，比较重要的主要是**
+
+1. Innodb_row_lock_time_avg（等待平均时长）
+2. Innodb_row_lock_waits（等待总次数）
+3. Innodb_row_lock_time（等待总时长）
+
+------
+
+尤其是当等待次数很高，而且每次等待时长也不小的时候，我们就需要分析系统中为什么会有如此多的等待，然后根据分析结果着手指定优化计划。
+
+### 4.3.6 行锁优化
+
+**优化建议:**
+
+1. 尽可能让所有数据检索都通过索引来完成，避免无索引行锁升级为表锁
+2. 合理设计索引，尽量缩小锁的范围
+3. 尽可能较少检索条件，避免间隙锁
+4. 尽量控制事务大小，减少锁定资源量和时间长度
+5. 尽可能低级别事务隔离
+
+## 4.4 页锁
+
+1. 开销和加锁时间界于表锁和行锁之间：会出现死锁；
+2. 锁定粒度界于表锁和行锁之间，并发度一般。
+3. 了解即可
 
 
 

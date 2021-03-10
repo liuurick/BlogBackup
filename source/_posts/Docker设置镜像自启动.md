@@ -2,10 +2,10 @@
 title: Docker设置镜像自启动
 date: 2020-11-09 22:26:44
 tags: Docker
-categories: Docker
+categories: [后端,分布式/微服务,虚拟化/容器化]
 ---
 
-Docker便捷小技巧：
+Docker便捷小技巧
 
 <!--more-->
 

@@ -2,7 +2,7 @@
 title: MySQL中count(字段) ，count(主键 id) ，count(1)和count(*)的区别
 date: 2020-11-18 19:42:40
 tags: MySQL
-categories: MySQL
+categories: [编程基础,MySQL]
 ---
 
 **注：下面的讨论和结论是基于 InnoDB 引擎的。**

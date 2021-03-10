@@ -9,13 +9,9 @@ categories: [编程基础,Java语言,JavaSE基础]
 
 <!--more-->
 
-> 面向对象的多态性：https://liuyangjun.blog.csdn.net/article/details/79788326
->
-> 理解java的三大特性之多态：https://www.cnblogs.com/chenssy/p/3372798.html
-
-
-
 # 封装
+
+隐藏内部实现细节
 
 
 
@@ -23,13 +19,17 @@ categories: [编程基础,Java语言,JavaSE基础]
 
 > https://www.cnblogs.com/dolphin0520/p/3803432.html
 
-
+继承在一定程度上破坏了父类的封装性，此时要合理运用组合
 
 
 
 # 多态
 
 > https://www.zhihu.com/question/30082151
+>
+> 面向对象的多态性：https://liuyangjun.blog.csdn.net/article/details/79788326
+>
+> 理解java的三大特性之多态：https://www.cnblogs.com/chenssy/p/3372798.html
 
 ## 什么是多态
 
@@ -69,15 +69,9 @@ categories: [编程基础,Java语言,JavaSE基础]
 
 弊端：不能使用子类特有的属性和方法
 
-![image-20201228124938500](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201228124938500.png)
 
 
-
-
-
-
-
-
+例子：
 
  比如你是一个酒神，对酒情有独钟。某日回家发现桌上有几个杯子里面都装了白酒，从外面看我们是不可能知道这是些什么酒，只有喝了之后才能够猜出来是何种酒。你一喝，这是剑南春、再喝这是五粮液、再喝这是酒鬼酒….在这里我们可以描述成如下：
 
@@ -101,5 +95,14 @@ categories: [编程基础,Java语言,JavaSE基础]
 
    在这里我们这样理解，这里定义了一个Wine 类型的a，它指向JNC对象实例。由于JNC是继承与Wine，所以JNC可以自动向上转型为Wine，所以a是可以指向JNC实例对象的。这样做存在一个非常大的好处，在继承中我们知道子类是父类的扩展，它可以提供比父类更加强大的功能，如果我们定义了一个指向子类的父类引用类型，那么它除了能够引用父类的共性外，还可以使用子类强大的功能。
 
-   但是向上转型存在一些缺憾，那就是它必定会导致一些方法和属性的丢失，而导致我们不能够获取它们。所以父类类型的引用可以调用父类中定义的所有属性和方法，对于只存在与子类中的方法和属性它就望尘莫及了---1。
+   但是向上转型存在一些缺憾，那就是它必定会导致一些方法和属性的丢失，而导致我们不能够获取它们。所以父类类型的引用可以调用父类中定义的所有属性和方法，对于只存在与子类中的方法和属性它就望尘莫及了。
 
+
+
+# 枚举
+
+>https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html
+
+枚举的遍历：`values()`
+
+![image-20210208105851798](/images/2021020801.png)

@@ -23,3 +23,8 @@ categories: 理财
 >
 > 指数基金估值之PE, PB, ROE：https://zhuanlan.zhihu.com/p/111568187
 
+
+
+**指数基金分类**：
+
+![2020120701](/images/2021030201.png)

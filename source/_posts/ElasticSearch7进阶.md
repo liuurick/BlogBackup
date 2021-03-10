@@ -2,7 +2,7 @@
 title: ElasticSearch7进阶
 date: 2020-12-06 11:10:05
 tags: ElasticSearch7
-categories: ElasticSearch
+categories: [后端,搜索引擎,ElasticSearch]
 ---
 
 ElasticSearch的进阶学习主要有两种分别是通读文档和案例学习。这里我选择的是通过案例来深入学习es。

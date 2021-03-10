@@ -2,14 +2,14 @@
 title: Centos7上安装docker
 date: 2019-12-17 21:27:49
 tags: Docker
-categories: Docker
+categories: [后端,分布式/微服务,虚拟化/容器化]
 ---
 
 Docker分为社区版CE和企业版EE。CE版完全足够个人使用，选择stable版本即可。
 
 <!--more-->
 
-##  一、安装docker
+##  1 安装docker
 
 1.Docker 要求 CentOS 系统的内核版本高于 3.10 ，查看本页面的前提条件来验证你的CentOS 版本是否支持 Docker 。
 
@@ -80,7 +80,7 @@ Docker分为社区版CE和企业版EE。CE版完全足够个人使用，选择st
 
  
 
-## 二、配置镜像加速
+## 2 配置镜像加速
 
 > 阿里云界面：https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 
@@ -103,7 +103,7 @@ sudo systemctl restart docker
 
 
 
-## 三、问题
+## 3 问题
 
 1.因为之前已经安装过旧版本的docker，在安装的时候报错如下：
 

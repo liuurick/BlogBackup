@@ -2,14 +2,14 @@
 title: 快速构建Java Web项目的开发环境
 date: 2020-11-20 17:48:18
 tags: Java Web
-categories: Java Web
+categories: [后端,Java Web]
 ---
 
 Idea通过maven快速构建项目
 
 <!--more-->
 
-# 1.搭建CRM项目的开发环境
+# 1.搭建项目的开发环境
 
 - 设置字体
 - 设置工作区的字符集为utf-8
@@ -44,13 +44,9 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 
 
- 
-
 新创建的Maven项目，目录结构如下：
 
 ![image-20201120175616811](/images/2020112005.png)
-
-
 
 将pom.xml中没有用的信息去除掉
 
@@ -91,24 +87,19 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 </build>
 ```
 
-
-
 点击左侧Maven Projects，点击刷新
 
 ![image-20201120180057366](/images/2020112007.png)
 
-
-
 在resource路径下引入开发用的配置文件和属性文件
 
-jdbc.properties（修改数据库名）
+- jdbc.properties（修改数据库名）
 
-log4j.properties
 
-mybatis-config.xml
+- log4j.properties
+- mybatis-config.xml
 
-SqlMapper.xml（建立后台包结构后加入该文件）
-
+- SqlMapper.xml（建立后台包结构后加入该文件）
 
 
 项目文件结构如下：
@@ -120,8 +111,6 @@ SqlMapper.xml（建立后台包结构后加入该文件）
 # 3.创建一个数据库
 
 ![image-20201120180410393](/images/2020112009.png)
-
-
 
 * 将项目原型拷贝到webapp目录下
 

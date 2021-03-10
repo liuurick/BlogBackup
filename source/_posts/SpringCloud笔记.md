@@ -2,7 +2,7 @@
 title: SpringCloud笔记
 date: 2020-08-15 18:33:20
 tags: SpringCloud
-categories: [应用框架,后端,分布式/微服务]
+categories: [后端,分布式/微服务]
 ---
 
 [TOC]
@@ -21,17 +21,23 @@ categories: [应用框架,后端,分布式/微服务]
 
 # 版本对应
 
-SpringCloud F
+- SpringCloud F
 
-SpringBoot 2.2.2.RELEASE
 
-SpringCloud Alibaba 2.1.0.RELEASE
+- SpringBoot 2.2.2.RELEASE
 
-JDK1.8
 
-Maven 3.5及以上
+- SpringCloud Alibaba 2.1.0.RELEASE
 
-mysql 5.7及以上
+
+- JDK1.8
+
+
+- Maven 3.5及以上
+
+
+- mysql 5.7及以上
+
 
 
 
@@ -82,10 +88,4 @@ mysql 5.7及以上
 - 目的和重要性
 
 
-
-![image-20210117105845082](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210117105845082.png)
-
-
-
-![image-20210117105905190](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210117105905190.png)
 

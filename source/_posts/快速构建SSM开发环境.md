@@ -2,7 +2,7 @@
 title: 快速构建SSM开发环境
 date: 2020-12-01 20:51:22
 tags: SSM
-categories: Java Web
+categories: [后端,Spring家族]
 ---
 
 记录一下SSM的搭建过程。
@@ -13,13 +13,17 @@ categories: Java Web
 
 先准备好搭建项目的基本环境
 
-Intellij IDEA：2020.1.1
+- Intellij IDEA：2020.1.1
 
-JDK：1.8
 
-Maven：3.6.3
+- JDK：1.8
 
-Tomcat：8.0及以上
+
+- Maven：3.6.3
+
+
+- Tomcat：8.0及以上
+
 
 下载安装好软件后，在idea软件设置里做好JDK、Maven和Tomcat的相关环境配置，这方面网上的资料很多，本文就不介绍了。
 
@@ -278,22 +282,10 @@ log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss,SSS} -[%p]
 ### jdbc.properties
 
 ```xml
-driver=com.mysql.jdbc.Driver    
-url=jdbc:mysql://localhost:3306/test?characterEncoding=utf8&useSSL=false    
-#数据库的用户名
-username=xxx     
-#数据库的密码，别像我一样不设置
-password=xxx          
-#定义初始连接数
-initialSize=0    
-#定义最大连接数
-maxActive=20    
-#定义最大空闲
-maxIdle=20    
-#定义最小空闲
-minIdle=1    
-#定义最长等待时间
-maxWait=60000
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/myo2o?useSSL=false&characterEncoding=utf-8
+jdbc.username=root
+jdbc.password=123456
 ```
 
 

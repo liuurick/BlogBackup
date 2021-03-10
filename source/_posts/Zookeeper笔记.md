@@ -2,7 +2,7 @@
 title: Zookeeper笔记
 date: 2020-3-24 16:37:32
 tags: [Zookeeper,Zookeeper集群]
-categories: Zookeeper
+categories: [后端,分布式/微服务,服务发现/注册]
 ---
 
 Zookeeper知识点总结

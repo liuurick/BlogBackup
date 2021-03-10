@@ -2,7 +2,7 @@
 title: ubuntu安装VMware Tools
 date: 2020-08-03 17:41:01
 categories: Ubuntu
-tags: Ubuntu
+tags: [开发工具,Linux系统]
 ---
 VMware Tools罕见问题的记录
 

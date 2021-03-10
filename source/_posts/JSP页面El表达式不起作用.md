@@ -2,7 +2,7 @@
 title: JSP页面El表达式不起作用
 date: 2020-11-22 09:21:39
 tags: [JSP,session]
-categories: JSP
+categories: [前端,模板框架,JSP]
 ---
 
 首先查看web.xml文件 查看jsp servlet版本是多少？

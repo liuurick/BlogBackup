@@ -2,7 +2,7 @@
 title: '@NotBlank,@NotEmpty,@NotNull三种注解'
 date: 2020-12-18 14:01:18
 tags: 注解
-categories: Spring
+categories: [后端,Spring家族,Spring]
 ---
 
 ```

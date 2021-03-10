@@ -2,10 +2,14 @@
 title: JVM学习笔记
 date: 2020-12-20 11:40:28
 tags: JVM
-categories: JVM
+categories: [编程基础,Java语言,JVM]
 ---
 
-# 为什么学习JVM
+[TOC]
+
+<!--more-->
+
+# 1 为什么学习JVM
 
 1.面试需要
 
@@ -32,13 +36,57 @@ categories: JVM
 - 选择GC垃圾回收器
 - 第三方中间件的适配
 
-<!--more-->
+
 
 # 2 认识JVM规范 
 
+**认识JVM**：是什么，有什么，能干什么
+
+> JVM：Java Virtual Machine，也就是Java虚拟机
+>
+> 虚拟机：通过软件模拟的具有完整硬件系统功能的，运行在一个完全隔离环境中的计算机系统
+> JVM是通过软件来模拟Java字节码的指令集，是Java程序的运行环境
+
+![image-20201224105252066](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201224105252066.png)
 
 
 
+**JVM主要功能**
+
+1. 通过ClassLoader寻找和装载class文件
+2. 解释字节码成为指令并执行，提供class文件的运行环境
+3. 进行运行期间的内存分配和垃圾回收
+4. 提供与硬件交互的平台
+
+
+
+​	JVM跨平台特征
+
+![image-20201224105219618](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20201224105219618.png)
+
+
+
+## JVM规范作用及其核心
+
+> Java虚拟机规范为不同的硬件平台提供了一种编译Java技术代码的规范
+>
+> 该规范是Java软件独立于平台，因为编译针对作为虚拟机的“一般机器”而做
+
+**JVM规范定义的主要内容**：
+
+可以看官方文档
+
+- 字节码指令集（相当于中央处理器CPU）
+- Class文件的格式
+- 数据类型和值
+- 运行时数据区
+- 栈帧
+- 特殊方法
+- 类库
+- 异常
+- 虚拟机的启动，加载，链接和初始化
+
+虚拟机规范内容很多，了解即可
 
 
 

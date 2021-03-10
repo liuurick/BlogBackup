@@ -2,7 +2,7 @@
 xmltitle: Docker搭建MySQL集群-PXC方案
 date: 2020-8-21 20:24:44
 tags: [MySQL集群,Docker]
-categories: PXC
+categories: [后端,数据库,数据库集群]
 ---
 
 尝试通过Dcoekr搭建MySQL集群

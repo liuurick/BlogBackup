@@ -2,7 +2,7 @@
 title: 'MySQL数据库中的Date,DateTime,TimeStamp和Time类型'
 date: 2020-11-18 19:52:52
 tags: MySQL日期类型
-categories: MySQL
+categories: [编程基础,MySQL]
 ---
 
 **DATETIME**类型用在你需要同时包含日期和时间信息的值时。MySQL检索并且以'YYYY-MM-DD HH:MM:SS'格式显示DATETIME值，支持的范围是'1000-01-01 00:00:00'到'9999-12-31 23:59:59'。（“支持”意味着尽管更早的值可能工作，但不能保证他们可以。）

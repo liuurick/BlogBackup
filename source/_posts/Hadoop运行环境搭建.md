@@ -2,7 +2,7 @@
 title: Hadoop运行环境搭建
 date: 2020-03-27 08:27:00
 tags: Hadoop集群
-categories: Hadoop
+categories: [大数据,Hadoop]
 ---
 Hadoop运行环境搭建
 

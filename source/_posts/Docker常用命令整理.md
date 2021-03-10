@@ -2,10 +2,10 @@
 title: Docker常用命令整理
 date: 2019-10-01 17:34:37
 tags: Docker命令
-categories: Docker
+categories: [后端,分布式/微服务,虚拟化/容器化]
 ---
 
-## 
+[TOC]
 
 <!--more-->
 

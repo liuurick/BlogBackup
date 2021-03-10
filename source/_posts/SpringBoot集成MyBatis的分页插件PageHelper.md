@@ -1,11 +1,11 @@
 ---
 title: SpringBoot集成MyBatis的分页插件PageHelper
 date: 2020-10-25 11:11:35
-tags: [Java,SpringBoot]
-categories: 分页功能
+tags: 分页功能
+categories: [后端,数据库,ORM框架]
 ---
 
-## 
+[TOC]
 
 <!--more-->
 
@@ -13,7 +13,7 @@ categories: 分页功能
 
 
 
-## Spring集成PageHelper：
+## Spring集成PageHelper
 
 **第一步：pom文件引入依赖**
 
@@ -88,7 +88,7 @@ public DatagridResult itemList(Integer page, Integer rows) {
 }
 ```
 
-## springboot集成PageHelper：
+## springboot集成PageHelper
 
 **第一步：pom文件还是需要引入依赖**
 

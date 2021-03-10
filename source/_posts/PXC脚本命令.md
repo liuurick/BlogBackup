@@ -2,10 +2,10 @@
 title: PXC脚本命令
 date: 2020-12-13 19:19:18
 tags: [MySQL集群,PXC]
-categories: PXC
+categories: [后端,数据库,数据库集群]
 ---
 
-MySQL集群脚本命令
+通过Centos搭建PXC集群脚本命令
 
 <!--more-->
 

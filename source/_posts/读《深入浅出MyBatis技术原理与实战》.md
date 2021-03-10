@@ -5,20 +5,30 @@ tags: MyBatis
 categories: 读书
 ---
 
-1.MyBatis简介
+[TOC]
 
-2 MyBatis入门
+<!--more-->
 
-3 配置
+# 1.MyBatis简介
 
-4 映射器
+# 2 MyBatis入门
 
-5 动态SQL
+`useGeneratedKeys`:默认为false，为true时，表示如果插入的表以自增列为主键，则允许 JDBC 支持自动生成主键，并可将自动生成的主键返回；
 
-6 MyBatis的解析和运行原理
+`keyProperty`:实体类对应主键的属性；
 
-7 插件
+`keyColumn`:数据库中的主键；
 
-8 MyBatis-Spring
+# 3 配置
 
-9 实用的场景
+# 4 映射器
+
+# 5 动态SQL
+
+# 6 MyBatis的解析和运行原理
+
+# 7 插件
+
+# 8 MyBatis-Spring
+
+# 9 实用的场景

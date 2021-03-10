@@ -2,7 +2,7 @@
 title: SpringBoot实现邮件发送功能
 date: 2020-08-13 14:34:43
 tags: 邮件
-categories: SpringBoot
+categories: [后端,Spring家族,SpringBoot]
 ---
 SpringBoot实现邮件发送功能
 

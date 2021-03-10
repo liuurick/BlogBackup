@@ -2,7 +2,7 @@
 title: Redis应用场景
 date: 2019-12-18 11:21:17
 tags: Redis
-categories: Redis
+categories: [后端,中间件,缓存]
 ---
 
 Redis以高性能著称，了解与掌握redis常用操作很有必要
