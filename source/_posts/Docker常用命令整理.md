@@ -9,7 +9,20 @@ categories: [后端,分布式/微服务,虚拟化/容器化]
 
 <!--more-->
 
-## 常用命令
+# 基本命令
+
+```
+systemctl start docker			#启动    
+sudo systemctl daemon-reload	#守护进程重启  
+systemctl restart docker		#重启docker服务  
+sudo service docker restart		#重启docker服务  
+docker service docker stop		#关闭
+docker systemctl stop docker	#关闭
+```
+
+
+
+# 常用命令
 
 ```text
 docker pull ${CONTAINER NAME}                    #拉取镜像
@@ -31,7 +44,9 @@ docker run...                                    #运行一个容器
     -v ${host folder path}:${container folder path}   #将主机目录挂在到容器内
 ```
 
-## 高级命令
+
+
+# 高级命令
 
 ```text
 # Advance use 
