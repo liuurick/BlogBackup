@@ -375,7 +375,7 @@ public class CustomLoginController {
 
 重启 security-web 下的 com.liuurick.WebApplication 访问 http://localhost:8080 会进入跳转到 http://localhost:8080/login/page ， 并且请求报错 localhost 将您重定向的次数过多
 
-![image-20210316162802532](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210316162802532.png)
+![image-20210316162802532](C:\Users\admin\Desktop\blog\source\images\2021031306.png)
 
 
 
@@ -514,7 +514,7 @@ public class ReloadMessageConfig {
 
 - 重启项目，当输入错误用户信息时，页面是否会回显 用户名或密码错误
 
-![image-20210319173850288](C:\Users\admin\Desktop\blog\source\images\2021031305.png)
+![image-20210319173850288](C:\Users\admin\Desktop\blog\source\images\2021031307.png)
 
 - 用户信息输入正确，会重定向回引发认证的请求中，即首页。
 
@@ -704,13 +704,13 @@ auth.userDetailsService(customUserDetailsService);
 
 ### 5.7.1 概述 
 
-重点关注 AuthenticationSuccessHandler 接口 
+重点关注 `AuthenticationSuccessHandler` 接口 
 
 当前登录成功后，跳转到之前请求的 url , 而现在希望登录成功后，实现其他的业务逻辑。比如累计积分、通过 Ajax 请求响应一个JSON数据，前端接收到响应的数据进行跳转。那可以使用自定义登录成功处理逻辑。
 
 ### 5.7.2 编码实现
 
-1. 将MengxueguResult.java 工具类拷贝到 security-base 模块中的 com.liuurick.base.result 包下。用于封装响应JSON数据。 
+1. 将Result.java 工具类拷贝到 security-base 模块中的 com.liuurick.base.result 包下。用于封装响应JSON数据。 
 
 2. 创建 com.liuurick.security.authentication.CustomAuthenticationSuccessHandler ，实 现 AuthenticationSuccessHandler 接口 
 
@@ -730,8 +730,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     }
 }
 ```
-
-
 
 3. 在 SpringSecurityConfig 中注入 和 引用自定义认证成功处理器 customAuthenticationSuccessHandler
 
@@ -768,7 +766,7 @@ private AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
 ### 5.8.1 概述 
 
-重点关注 AuthenticationFailureHandler 接口
+重点关注 `AuthenticationFailureHandler` 接口
 
 登录错误后记录日志，当次数超过3次后，2小时内不允许登录，那可以使用自定义登录失败后，进行逻辑处理。
 
@@ -799,9 +797,9 @@ private AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
 2. 在 SpringSecurityConfig 中注入 和 引用自定义认证失败处理器 customAuthenticationFailureHandler
 
-   ![image-20210319204052982](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210319204052982.png)
+   ![image-20210319204052982](C:\Users\admin\Desktop\blog\source\images\2021031308.png)
 
-3. 重启项目，访问 http://localhost :8080
+3. 重启项目，访问 http://localhost:8080
 4. 输入错误用户名和密码后，页面响应数据
 
 
@@ -811,89 +809,142 @@ private AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 1. 如果是通过ajax发送请求, 应该响应 JSON 通知前端认证成功或失败 
 2. 否则直接重定向回来源请求 
 
-要实现这个效果应该在 CustomAuthenticationFailureHandler 和 CustomAuthenticationSuccessHandler 加上一个类型判断，且我们将这些类型都可配置的。
+要实现这个效果应该在 `CustomAuthenticationFailureHandler` 和 `CustomAuthenticationSuccessHandler` 加上一个类型判断，且我们将这些类型都可配置的。
 
 ### 5.9.1 创建响应类型枚举类
 
+在 security-core 中创建枚举类 com.liuurick.security.properties.LoginResponseType
+
+```java
+public enum LoginResponseType {
+
+    /**
+     * 响应JSON字符串
+     */
+    JSON,
+
+    /**
+     * 重定向地址
+     */
+    REDIRECT
+}
+```
 
 
 
+### 5.9.2 配置 application.yml 
+
+1. 在security-web\src\main\resources\application.yml 文件中配置登录类型 
+   - `REDIRECT` 表示重向一个页面 
+   - JSON 响应JSON字符串
+
+### 5.9.3 读取自定义配置数据
+
+在 com.liuurick.security.properties.AuthenticationProperties 添加 loginType 属性
+
+```java
+	/**
+     * 登录成功后响应 JSON , 还是重定向
+     * 如果application.yml 中没有配置，则取此初始值 REDIRECT
+    */
+    private LoginResponseType loginType = LoginResponseType.REDIRECT;
+
+    public LoginResponseType getLoginType() {
+        return loginType;
+    }
+    public void setLoginType(LoginResponseType loginType) {
+        this.loginType = loginType;
+    }
+```
 
 
 
+### 5.9.4 重构成功处理器
+
+重构 `com.liuurick.security.authentication.CustomAuthenticationSuccessHandler` 
+
+1. 将实现改为继承 `extends SavedRequestAwareAuthenticationSuccessHandler` 默认实现类 
+2. 加上判断响应 JSON 还是 重定向回认证来源请求 
+3. 采用 `SecurityProperties.authentication.loginType` 配置值进行判断认证响应类型。
+
+4. 重启测试，当 application.yml 配置不同登录类型，登录用户信息正确时，是否响应效果不一样
 
 
 
+### 5.9.5 重构失败处理器 
+
+1. 将实现改为继承 `extends SimpleUrlAuthenticationFailureHandler `类 
+2. 加上判断响应 JSON 还是 重定向回认证来源请求 
+3. 采用 `SecurityProperties.authentication.loginType` 配置值进行判断认证响应类型。 
+4. 要指定重写向回登录页时，要指定上次请求地址加 `?error`
+
+5. 重启测试，当 application.yml 配置不同登录类型，登录用户信息错误时，是否响应效果不一样。
 
 
 
 ## 5.10 分析用户名密码认证底层源码
 
+![image-20210320170108290](C:\Users\admin\Desktop\blog\source\images\2021031309.png)
 
 
 
 
 
+# 6 图形验证码/记住我/手机短信认证项目实战
 
-# 6 图形验证码、记住我和手机短信认证项目实战
+## 6.1 图形验证码认证功能 
 
-课时26视频详解图形验证码认证实现流程04:20
+### 6.1.1 分析实现流程
 
-课时27视频生成与获取图形验证码15:54
+![image-20210320172616741](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210320172616741.png)
 
-课时28视频自定义图形验证码过滤器18:21
 
-课时29视频RememberMe记住我功能17:20
 
-课时30视频分析记住我功能底层源码实现11:50
+### 6.1.2 生成一张图形验证码 
 
-课时31视频详解手机短信验证码认证流程12:31
+Kaptcha 是谷歌提供的一个生成图形验证码的 jar 包, 只要简单配置属性就可以生成。
 
-课时32视频创建短信发送服务接口10:28
+> 参考 ：https://github.com/penggle/kaptcha
 
-课时33视频手机登录页与发送短信验证码11:52
+1. 添加 Kaptcha 依赖，在 security-core\pom.xml 中
 
-课时34视频实现短信验证码校验过滤器05:51
+```xml
+<dependency>
+	<groupId>com.github.penggle</groupId>
+	<artifactId>kaptcha</artifactId>
+</dependency>
+```
 
-课时35视频实现手机认证过滤器和封装手机认证信息13:51
+2. 生成验证码配置类，在 security-core 模块中创建 `com.liuurick.security.authentication.code.KaptchaImageCodeConfig`
 
-课时36视频实现手机认证提供者和手机号获取用户信息14:25
+3. 在 CustomLoginController 提供请求接口，将验证码图片数据流写出
 
-课时37视频自定义认证配置组合手机认证组件15:49
+4. 在 SpringSecurityConfig.configure(HttpSecurity http) 放行 /code/image 资源权限
 
-课时38视频完善手机短信认证失败处理流程07:48
+   ```java
+   antMatchers(securityProperties.getAuthentication().getLoginPage(),
+               "/code/image").permitAll()
+   ```
 
-课时39视频手机验证码登录记住我功能与记住我底层源码分析20:51
+5. 重构 security-web 模块的 login.html 页面，调用验证码接口渲染图片
 
-课时40视频获取当前用户认证信息09:15
+```
+<div class="row mb-2 ">
+<div class="col-6">
+<input name="code" type="text" class="form-control" placeholder="验证码">
+</div>
+<div class="col-6">
+<img onclick="this.src='/code/image?'+Math.random()" src="/code/image" alt="验证码" />
+</div>
+</div>
 
-课时41视频重构身份认证代码实现路径可配置09:17
+```
+
+
 
 # 7 Session 会话管理与Redis搭建Session集群
 
-课时42视频配置Session会话超时时长与自定义Session失效处理16:45
 
-课时43视频同一用户只允许一台电脑登录情景一17:52
-
-课时44视频同一用户只允许一台电脑登录情景二04:36
-
-课时45视频解决手机短信验证码重复登录问题07:20
-
-课时46视频Redis实现Session高可用集群12:10
-
-课时47视频指定Cookie中保存SessionID名称10:14
-
-课时48视频退出系统默认配置与退出底层源码分析13:58
-
-课时49视频分析底层源码-退出不允许再次登录14:39
-
-课时50视频解决退出不允许再次登录问题08:40
-
-课时51视频解决Session超时不允许再次登录15:14
-
-课时52视频分析底层源码记住我功能失效原因21:11
-
-课时53视频自定义退出系统处理逻辑04:42
 
 # 8 Spring Security 授权管理及方法级别权限控制
 
