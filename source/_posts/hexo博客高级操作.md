@@ -11,6 +11,8 @@ categories: hexo
 
 <!--more-->
 
+# 扩展功能
+
 ## 修改``的样式
 
 Next默认的主题样式是灰色的，不太显眼，颜色也不太好看，可以将其设置成自己喜欢的颜色，效果如下：
@@ -38,3 +40,18 @@ code {
 ```
 
 > 以上的颜色可以配置自己喜欢的，比如效果图中的颜色是我个人比较喜欢的。
+
+
+
+# 可能遇到的问题
+
+在使用本地搜索功能时，你可能会遇到以下错误：
+
+```xml
+This page contains the following errors:
+error on line 86 at column 35: Input is not proper UTF-8, indicate encoding !
+Bytes: 0x08 0xE8 0xB7 0x9F
+Below is a rendering of the page up to the first error.
+```
+
+出现这种错误原因大多是因为搜狗输入法带来的特殊字符串，我们在源码中替换它即可。打开编辑器（比如`vscode`），在全局搜索错误信息`Bytes` 第一个字节 `/x08` 替换为空。

@@ -375,7 +375,7 @@ public class CustomLoginController {
 
 重启 security-web 下的 com.liuurick.WebApplication 访问 http://localhost:8080 会进入跳转到 http://localhost:8080/login/page ， 并且请求报错 localhost 将您重定向的次数过多
 
-![image-20210316162802532](C:\Users\admin\Desktop\blog\source\images\2021031306.png)
+![image-20210316162802532](/images/2021031306.png)
 
 
 
@@ -514,7 +514,7 @@ public class ReloadMessageConfig {
 
 - 重启项目，当输入错误用户信息时，页面是否会回显 用户名或密码错误
 
-![image-20210319173850288](C:\Users\admin\Desktop\blog\source\images\2021031307.png)
+![image-20210319173850288](/images/2021031307.png)
 
 - 用户信息输入正确，会重定向回引发认证的请求中，即首页。
 
@@ -797,7 +797,7 @@ private AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
 2. 在 SpringSecurityConfig 中注入 和 引用自定义认证失败处理器 customAuthenticationFailureHandler
 
-   ![image-20210319204052982](C:\Users\admin\Desktop\blog\source\images\2021031308.png)
+   ![image-20210319204052982](/images/2021031308.png)
 
 3. 重启项目，访问 http://localhost:8080
 4. 输入错误用户名和密码后，页面响应数据
@@ -884,7 +884,7 @@ public enum LoginResponseType {
 
 ## 5.10 分析用户名密码认证底层源码
 
-![image-20210320170108290](C:\Users\admin\Desktop\blog\source\images\2021031309.png)
+![image-20210320170108290](/images/2021031309.png)
 
 
 
@@ -896,7 +896,7 @@ public enum LoginResponseType {
 
 ### 6.1.1 分析实现流程
 
-![image-20210320172616741](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210320172616741.png)
+![image-20210320172616741](/images/2021031310.png)
 
 
 
@@ -917,7 +917,58 @@ Kaptcha 是谷歌提供的一个生成图形验证码的 jar 包, 只要简单�
 
 2. 生成验证码配置类，在 security-core 模块中创建 `com.liuurick.security.authentication.code.KaptchaImageCodeConfig`
 
+   ```java
+   @Configuration
+   public class KaptchaImageCodeConfig {
+       
+       @Bean
+       public DefaultKaptcha getDefaultKaptcha(){
+   
+           DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
+           Properties properties = new Properties();
+           properties.setProperty(Constants.KAPTCHA_BORDER, "yes");
+           properties.setProperty(Constants.KAPTCHA_BORDER_COLOR, "192,192,192");
+           properties.setProperty(Constants.KAPTCHA_IMAGE_WIDTH, "110");
+           properties.setProperty(Constants.KAPTCHA_IMAGE_HEIGHT, "36");
+           properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_FONT_COLOR, "blue");
+           properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_FONT_SIZE, "28");
+           properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_FONT_NAMES, "宋体");
+           properties.setProperty(Constants.KAPTCHA_TEXTPRODUCER_CHAR_LENGTH, "4");
+           // 图片效果
+           properties.setProperty(Constants.KAPTCHA_OBSCURIFICATOR_IMPL, "com.google.code.kaptcha.impl.ShadowGimpy");
+           Config config = new Config(properties);
+           defaultKaptcha.setConfig(config);
+           return defaultKaptcha;
+       }
+   }
+   ```
+
 3. 在 CustomLoginController 提供请求接口，将验证码图片数据流写出
+
+   ```java
+   @Autowired
+       private DefaultKaptcha defaultKaptcha;
+   
+       /**
+        * 获取图形验证码
+        */
+       @RequestMapping("/code/image")
+       public void imageCode(HttpServletRequest request, HttpServletResponse response) throws
+               IOException {
+           // 1. 获取验证码字符串
+           String code = defaultKaptcha.createText();
+           log.info("生成的图形验证码是：" + code);
+           // 2. 字符串把它放到session中
+           request.getSession().setAttribute(SESSION_KEY , code);
+           // 3. 获取验证码图片
+           BufferedImage image = defaultKaptcha.createImage(code);
+           // 4. 将验证码图片把它写出去
+           ServletOutputStream out = response.getOutputStream();
+           ImageIO.write(image, "jpg", out);
+       }
+   ```
+
+   
 
 4. 在 SpringSecurityConfig.configure(HttpSecurity http) 放行 /code/image 资源权限
 
@@ -928,17 +979,124 @@ Kaptcha 是谷歌提供的一个生成图形验证码的 jar 包, 只要简单�
 
 5. 重构 security-web 模块的 login.html 页面，调用验证码接口渲染图片
 
-```
+```html
 <div class="row mb-2 ">
-<div class="col-6">
-<input name="code" type="text" class="form-control" placeholder="验证码">
-</div>
-<div class="col-6">
-<img onclick="this.src='/code/image?'+Math.random()" src="/code/image" alt="验证码" />
-</div>
+	<div class="col-6">
+		<input name="code" type="text" class="form-control" placeholder="验证码">
+	</div>
+	<div class="col-6">
+		<img onclick="this.src='/code/image?'+Math.random()" src="/code/image" alt="验证码" />
+	</div>
 </div>
 
 ```
+
+**kaptcha参数说明:**
+
+![img](/images/2021031311.png)
+
+### 6.1.3 实现验证码校验过滤器
+
+1. 创建 `com.liuurick.security.authentication.code.ImageCodeValidateFilter` ，继承 `OncePerRequestFilter` （在 所有请求前都被调用一次） 
+2. 在类上加上注解 `@Component("imageCodeValidateFilter") `
+3. 如果是登录请求（请求地址： /login/form ，请求方式： post ），校验验证码输入是否正确 校验不合法时，提示信息通过自定义异常 `ValidateCodeExcetipn` 抛出 , 此异常要继承 `org.springframework.security.core.AuthenticationException` ，它是认证的父异常类。 捕获 `ImageCodeException` 异常，交给失败处理器 `CustomAuthenticationFailureHandler` 。 
+4. 如果非登录请求，则放行请求 `filterChain.doFilter(request, response)`
+
+
+
+### 6.1.4 创建验证码异常类
+
+创建 `com.liuurick.security.authentication.exception.ValidateCodeExcetipn` 异常类，它继承 `AuthenticationException`
+
+> 特别注意是：org.springframework.security.core.AuthenticationException
+
+```java
+public class ValidateCodeExcetipn extends AuthenticationException {
+    public ValidateCodeExcetipn(String msg, Throwable t) {
+        super(msg, t);
+    }
+    public ValidateCodeExcetipn(String msg) {
+        super(msg);
+    }
+}
+```
+
+
+
+
+
+### 6.1.5 重构 SpringSecurityConfig
+
+将校验过滤器 `imageCodeValidateFilter` 添加到 `UsernamePasswordAuthenticationFilter `前面 
+
+在 `com.liuurick.security.config.SpringSecurityConfig` 中完成以下操作： 
+
+1. 注入 ImageCodeValidateFilter 实例 
+
+   ```java
+   / 验证码校验过滤器
+   @Autowired
+   ImageCodeValidateFilter imageCodeValidateFilter;
+   ```
+
+2. 把 `ImageCodeValidateFilter` 添加 `UsernamePasswordAuthenticationFilter` 实例前
+
+![image-20210323205427643](/images/2021031312.png)
+
+
+
+##　6.2 Remember-Me 记住我功能
+
+效果: 登录后会记住用户令牌，不用反复登录 。 
+
+### 6.2.1 分析 Remember-Me 实现流程 
+
+1. 用户选择了“记住我”成功登录后，将会把username、随机生成的序列号、生成的token存入一个数据库表 中，同时将它们的组合生成一个cookie发送给客户端浏览器。 
+2. 当没有登录的用户访问系统时，首先检查 remember-me 的 cookie 值 ，有则检查其值包含的 username、 序列号和 token 与数据库中是否一致，一致则通过验证。 并且系统还会重新生成一个新的 token 替换数据库中对应旧的 token，序列号 series 保持不变 ，同时删除旧 的 cookie，重新生成 cookie 值（新的 token + 旧的序列号 + username）发送给客户端。 
+3. 如果对应cookie不存在，或者包含的username、序列号和token 与数据库中保存的不一致，那么将会引导用 户到登录页面。 因为cookie被盗用后还可以在用户下一次登录前顺利的进行登录，所以如果你的应用对安全性要求比较高就 不要使用Remember-Me功能。
+
+
+
+### 6.2.2 实现用户名密码 Remember-Me 功能
+
+1. security-core 的 pom.xml 引入依赖
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
+<dependency>
+	<groupId>mysql</groupId>
+	<artifactId>mysql-connector-java</artifactId>
+</dependency
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
