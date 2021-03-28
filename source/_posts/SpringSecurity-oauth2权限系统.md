@@ -1072,33 +1072,927 @@ public class ValidateCodeExcetipn extends AuthenticationException {
 </dependency
 ```
 
+2. mengxuegu-security-web 的 application.yml 配置数据源,
+
+```yml
+spring:
+  thymeleaf:
+    cache: false #关闭thymeleaf缓存
+  # 数据源配置
+  datasource:
+  username: root
+  password: root
+  url: jdbc:mysql://127.0.0.1:3306/study-security?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8
+  #mysql8版本以上驱动包指定新的驱动类
+  driver-class-name: com.mysql.cj.jdbc.Driver
+```
+
+3. 在数据库中创建一个 study-security
+
+4. 使用 JdbcTokenRepository 实现类
+
+```java
+@Autowired
+DataSource dataSource;
+
+@Bean
+public JdbcTokenRepositoryImpl jdbcTokenRepository() {
+    JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+    jdbcTokenRepository.setDataSource(dataSource);
+    return jdbcTokenRepository;
+}
+```
+
+5. 安全配置 SpringSecurityConfig#configure(HttpSecurity http)
+
+```java
+.and()
+.rememberMe() //记住我
+.tokenRepository(jdbcTokenRepository()) //保持登陆信息
+.tokenValiditySeconds(60*60*24*7) //保持登陆时间
+```
+
+6. 修改security-web 模块中的 login.html 记住我的 name="remember-me"
+
+7. 测试效果 
+   1. 重启，数据库会自动创建表 `persistent_logins `
+   2. 访问首页跳转到登录页面，登录成功后，查看浏览器 cookies，有保存 token 值。 数据库中也有数据。
+   3. 再重启，Session会把清除。再次访问首页，不会跳转到登录页，因为上次已经记录了。这时浏览器会带 着Cookie中保存的token从数据库查找用户名，然后进行自动登录。
 
 
 
+### 6.2.3 分析 Remember-Me 底层源码实现
+
+![img](file:///C:\Users\admin\Documents\Tencent Files\2826803629\Image\C2C\U{8GEBK3PKJBZP[FDLBEE]G.png)
+
+- `UsernamePasswordAuthenticationFilter `拥有一个 `RememberMeServices` 的引用，默认是一个空实现的 `NullRememberMeServices` ，而实际当我们通过 `rememberMe()` 启用 Remember-Me 时，它是一个具体的实现。 
+
+- 用户的请求会先通过 `UsernamePasswordAuthenticationFilter` ，当认证成功后会调用 `RememberMeServices` 的 `loginSuccess()` 方法，否则调用 `RememberMeServices` 的 `loginFail()` 方法。`UsernamePasswordAuthenticationFilter `不会调用 `RememberMeServices` 的 `autoLogin()` 方法进行自动登录 的。 
+
+- 当执行到 `RememberMeAuthenticationFilter` 时，如果检测到还没有认证成功时，那么 `RememberMeAuthenticationFilter` 会尝试着调用所包含的 `RememberMeServices` 的 `autoLogin()` 方法进行自 动登录。 
+- `PersistentTokenBasedRememberMeServices` 是 `RememberMeServices` 的启动`Remember-Me` 默认实现 , 它会通过 cookie 值进行查询数据库存储的记录, 来实现自动登录 ，并重新生成新的 cookie 存储。
 
 
 
+## 6.3 手机短信验证码认证功能
+
+### 6.3.1 分析实现流程
+
+手机号登录是不需要密码的，通过短信验证码实现免密登录功能。 
+
+1. 向手机发送手机验证码，使用第三方短信平台 SDK 发送，如: 阿里云短信服务（阿里大于） 
+2. 登录表单输入短信验证码 
+3. 使用自定义过滤器 `MobileValidateFilter `
+4. 当验证码校验通过后，进入自定义手机认证过滤器 `MobileAuthenticationFilter` 校验手机号是否存在 
+5. 自定义 `MobileAuthenticationToken` 提供给 `MobileAuthenticationFilter `
+6. 自定义 `MobileAuthenticationProvider` 提供给 `ProviderManager` 处理 
+7. 创建针对手机号查询用户信息的 `MobileUserDetailsService` ，交给 `MobileAuthenticationProvider`
+8. 自定义 `MobileAuthenticationConfig` 配置类将上面组件连接起来，添加到容器中 
+9. 将 `MobileAuthenticationConfig` 添加到 `SpringSecurityConfig` 安全配置的过滤器链上。
+
+![image-20210327180908660](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210327180908660.png)
+
+### 6.3.2 创建短信发送服务接口
+
+1. 定义短信发送服务接口 `com.liuurick.security.authentication.mobile.SmsSend`
+
+   ```java
+   public interface SmsSend {
+   	boolean sendSms(String mobile, String content);
+   }
+   ```
+
+2. 实现短信发送服务接口 `com.liuurick.security.authentication.mobile.SmsCodeSender`
+
+   ```java
+   @Slf4j
+   public class SmsCodeSender implements SmsSend {
+       @Override
+       public boolean sendSms(String mobile, String content) {
+           String sendcontent = String.format("尊敬的客户，您的验证码为%s，请勿泄露他人。", content);
+           log.info("验证码"+content);
+           return true;
+       }
+   }
+   ```
+
+3. 在 `com.liuurick.security.config` 创建 `SeurityConfigBean` 将 `SmsCodeSender` 添加到Spring容器。 也可以直接在类上加上 `@Component` 注解，但是不利于应用的扩展，因为短信服务提供商有非常多，实现就不一样，所以采用下面方式添加到容器：
+
+   ```java
+   @Configuration
+   public class SeurityConfigBean {
+   	/**
+   	* @ConditionalOnMissingBean(SmsSend.class)
+   	* 默认采用SmsCodeSender实例 ，但如果容器中有其他 SmsSend 类型的实例，则当前实例失效
+   	*/
+       @Bean
+       @ConditionalOnMissingBean(SmsSend.class)
+       public SmsSend getSmsSend(){
+           return new SmsCodeSender();
+       }
+   }
+   ```
+
+4. 在 security-web 中创建一个 `MobileSmsCodeSender` 短信服务接口的实现，来替换默认实现 `SmsCodeSender`  ,后面再进行测试这个接口。
+
+   ```java
+   @Slf4j
+   public class MobileSmsCodeSender implements SmsSend {
+   
+       @Override
+       public boolean sendSms(String mobile, String content) {
+           String sendcontent = String.format("尊敬的客户，您的验证码为%s，请勿泄露他人。", content);
+           log.info("验证码"+content);
+           return false;
+       }
+   }
+   ```
+
+### 6.3.3 手机登录页与发送短信验证码
+
+1. 创建 `com.liuurick.security.controller.CustomMobileController` 添加如下代码
+
+   ```java
+   @Controller
+   public class MobileLoginController {
+   
+       public static final String SESSION_KEY = "SESSION_KEY_MOBILE_CODE";
+   
+       /**
+        * 前往手机验证码登录页
+        * @return
+        */
+       @RequestMapping("/mobile/page")
+       public String toMobilePage() {
+           // templates/login-mobile.html
+           return "login-mobile";
+       }
+   
+       @Autowired
+       SmsSend smsSend;
+   
+       /**
+        * 发送手机验证码
+        * @return
+        */
+       @ResponseBody
+       @RequestMapping("/code/mobile")
+       public Result smsCode(HttpServletRequest request) {
+           // 1. 生成一个手机验证码
+           String code = RandomStringUtils.randomNumeric(4);
+           // 2. 将手机验证码保存到session中
+           request.getSession().setAttribute(SESSION_KEY, code);
+           // 3. 发送验证码到用户手机上
+           String mobile = request.getParameter("mobile");
+           smsSend.sendSms(mobile, code);
+   
+           return Result.ok();
+       }
+   }
+   ```
+
+2. 在 security-web 模块添加手机登录页面 login-mobile.html 到 templates 目录下 手机登录表单核心代码 `th:action="@{/mobile/form}"`
+
+   ` th:attr="code_url=@{/code/mobile?mobile=}"`
+
+3. 在 SpringSecurityConfig 放行手机登录相关请求URL
+
+   ```java
+   antMatchers(securityProperties.getAuthentication().getLoginPage(),
+   "/code/image", "/mobile/page", "/code/mobile").permitAll()
+   ```
+
+   
+
+### 6.3.4 实现短信验证码校验过滤器 MobileValidateFilter
+
+校验输入的验证码与发送的短信验证是否一致。 创建 `com.liuurick.security.authentication.mobile.MobileValidateFilter` ， 与图形证验码过滤器 `ImageCodeValidateFilter` 实现类似。 不要少了 @Component
+
+```java
+@Component
+public class MobileValidateFilter extends OncePerRequestFilter {
+    
+    @Autowired
+    CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 1. 判断 请求是否为手机登录，且post请求
+        if("/mobile/form".equals(request.getRequestURI())
+            && "post".equalsIgnoreCase(request.getMethod())) {
+            try {
+                // 校验验证码合法性
+                validate(request);
+            }catch (AuthenticationException e) {
+                // 交给失败处理器进行处理异常
+                customAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
+                // 一定要记得结束
+                return;
+            }
+        }
+
+        // 放行
+        filterChain.doFilter(request, response);
+    }
+
+    private void validate(HttpServletRequest request) {
+        // 先获取seesion中的验证码
+        String sessionCode =
+                (String)request.getSession().getAttribute(MobileLoginController.SESSION_KEY);
+        // 获取用户输入的验证码
+        String inpuCode = request.getParameter("code");
+        // 判断是否正确
+        if(StringUtils.isBlank(inpuCode)) {
+            throw new ValidateCodeException("验证码不能为空");
+        }
+
+        if(!inpuCode.equalsIgnoreCase(sessionCode)) {
+            throw new ValidateCodeException("验证码输入错误");
+        }
+    }
+}
+```
+
+### 6.3.5 实现手机认证过滤器 MobileAuthenticationFilter
+
+创建 `com.liuurick.security.authentication.mobile.MobileAuthenticationFilter` ， 模仿 `UsernamePasswordAuthenticationFilter` 代码进行改造
+
+```java
+public class MobileAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+
+    private String mobileParameter = "mobile";
+    private boolean postOnly = true;
+
+
+    public MobileAuthenticationFilter() {
+        super(new AntPathRequestMatcher("/mobile/form", "POST"));
+    }
+
+    // ~ Methods
+    // ========================================================================================================
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request,
+                                                HttpServletResponse response) throws AuthenticationException {
+        if (postOnly && !request.getMethod().equals("POST")) {
+            throw new AuthenticationServiceException(
+                    "Authentication method not supported: " + request.getMethod());
+        }
+
+        String mobile = obtainMobile(request);
+
+        if (mobile == null) {
+            mobile = "";
+        }
+
+        mobile = mobile.trim();
+
+        MobileAuthenticationToken authRequest = new MobileAuthenticationToken(mobile);
+
+        // sessionID, hostname
+        setDetails(request, authRequest);
+
+        return this.getAuthenticationManager().authenticate(authRequest);
+    }
+
+    /**
+     * 从请求中获取手机号码
+     */
+    @Nullable
+    protected String obtainMobile(HttpServletRequest request) {
+        return request.getParameter(mobileParameter);
+    }
+
+    /**
+     * 将 sessionID和hostname添加 到MobileAuthenticationToken
+     */
+    protected void setDetails(HttpServletRequest request,
+                              MobileAuthenticationToken authRequest) {
+        authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
+    }
+
+    /**
+     * 设置是否为post请求
+     */
+    public void setPostOnly(boolean postOnly) {
+        this.postOnly = postOnly;
+    }
+
+    public String getMobileParameter() {
+        return mobileParameter;
+    }
+
+    public void setMobileParameter(String mobileParameter) {
+        this.mobileParameter = mobileParameter;
+    }
+}
+```
+
+### 6.3.6 封装手机认证Token MobileAuthenticationToken
+
+创建 `com.liuurick.security.authentication.mobile.MobileAuthenticationToken` 提供给上面自定义的 MobileAuthenticationFilter 使用
+
+```java
+public class MobileAuthenticationToken extends AbstractAuthenticationToken {
+
+    private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
+
+    /**
+     * 认证前是手机号码,认证后是用户信息
+     */
+    private final Object principal;
+
+    /**
+     * 认证之前使用的构造 方法, 此方法会标识未认证
+     */
+    public MobileAuthenticationToken(Object principal) {
+        super(null);
+        // 手机号码
+        this.principal = principal;
+        // 未认证
+        setAuthenticated(false);
+    }
+
+    /**
+     * 认证通过后,会重新创建MobileAuthenticationToken实例 ,来进行封装认证信息
+     * @param principal 用户信息
+     * @param authorities 权限资源
+     */
+    public MobileAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities) {
+        super(authorities);
+        this.principal = principal;
+        // must use super, as we override
+        super.setAuthenticated(true);
+    }
+
+    /**
+     * 因为它是父类中的抽象方法,,所以要实现,直接返回null即可
+     * @return
+     */
+    @Override
+    public Object getCredentials() {
+        return null;
+    }
+
+
+    @Override
+    public Object getPrincipal() {
+        return this.principal;
+    }
+
+    @Override
+    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+        if (isAuthenticated) {
+            throw new IllegalArgumentException(
+                    "Cannot set this token to trusted - use constructor which takes a GrantedAuthority list instead");
+        }
+        super.setAuthenticated(false);
+    }
+
+    @Override
+    public void eraseCredentials() {
+        super.eraseCredentials();
+    }
+}
+```
+
+### 6.3.7 实现手机认证提供者 MobileAuthenticationProvider
+
+创建 `com.liuurick.security.authentication.mobile.MobileAuthenticationProvider` ， 提供给底层 `ProviderManager` 使用
+
+```java
+public class MobileAuthenticationProvider implements AuthenticationProvider {
+
+    private UserDetailsService userDetailsService;
+
+    public void setUserDetailsService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    /**
+     * 认证处理:
+     *  1. 通过手机号码 查询用户信息( UserDetailsService实现)
+     *  2. 当查询到用户信息, 则认为认证通过,封装Authentication对象
+     * @param authentication
+     * @return
+     * @throws AuthenticationException
+     */
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        MobileAuthenticationToken mobileAuthenticationToken =
+                (MobileAuthenticationToken)authentication;
+        // 获取手机号码
+        String mobile = (String)mobileAuthenticationToken.getPrincipal();
+        // 通过 手机号码 查询用户信息( UserDetailsService实现)
+        UserDetails userDetails =
+                userDetailsService.loadUserByUsername(mobile);
+
+        // 未查询到用户信息
+        if(userDetails == null) {
+            throw new AuthenticationServiceException("该手机号未注册");
+        }
+
+        // 认证通过
+        // 封装到 MobileAuthenticationToken
+        MobileAuthenticationToken authenticationToken =
+                new MobileAuthenticationToken(userDetails, userDetails.getAuthorities());
+        authenticationToken.setDetails(mobileAuthenticationToken.getDetails());
+        //最终返回认证信息
+        return authenticationToken;
+    }
+
+    /**
+     * 通过这个方法,来选择对应的Provider, 即选择MobileAuthenticationProivder
+     * @param authentication
+     * @return
+     */
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return MobileAuthenticationToken.class.isAssignableFrom(authentication);
+    }
+}
+```
+
+### 6.3.8 手机号获取用户信息 MobileUserDetailsService
+
+在 `security-web` 模块中创建 UserDetailsService 实现类： `com.liuurick.security.MobileUserDetailsService` 
+
+**注意：**不要注入 PasswordEncoder
+
+```java
+@Component("mobileUserDetailsService")
+@Slf4j
+public class MobileUserDetailsService implements UserDetailsService {
+
+    @Override
+    public UserDetails loadUserByUsername(String mobile) throws UsernameNotFoundException {
+        log.info("请求的手机号是：" + mobile);
+        // 1. 通过手机号查询用户信息
+        // 2. 如果有用户信息，则再获取权限资源
+        // 3. 封装用户信息
+
+        return new User("liubin", "", true, true, true, true,
+                AuthorityUtils.commaSeparatedStringToAuthorityList("ADMIN"));
+    }
+}
+```
 
 
 
+### 6.3.9 自定义管理认证配置 MobileAuthenticationConfig
+
+创建 `com.liuurick.security.authentication.mobile.MobileAuthenticationConfig` 类 将上面定义的组件绑定起来，添加到容器中：
+
+```java
+@Component
+public class MobileAuthenticationConfig
+        extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+
+    @Autowired
+    CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
+    @Autowired
+    CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+    @Autowired
+    UserDetailsService mobileUserDetailsService;
+
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+
+        MobileAuthenticationFilter mobileAuthenticationFilter = new MobileAuthenticationFilter();
+        // 获取容器中已经存在的AuthenticationManager对象，并传入 mobileAuthenticationFilter 里面
+        mobileAuthenticationFilter.setAuthenticationManager(
+                http.getSharedObject(AuthenticationManager.class));
+
+        // 为了实现手机登录也拥有记住我的功能,将RememberMeServices传入
+//        smsCodeAuthenticationFilter.setRememberMeServices(
+//                http.getSharedObject(RememberMeServices.class));
+
+
+        // 指定记住我功能
+        mobileAuthenticationFilter.setRememberMeServices(http.getSharedObject(RememberMeServices.class));
+
+        // 传入 失败与成功处理器
+        mobileAuthenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
+        mobileAuthenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
+
+        // 构建一个MobileAuthenticationProvider实例，接收 mobileUserDetailsService 通过手机号查询用户信息
+        MobileAuthenticationProvider provider = new MobileAuthenticationProvider();
+        provider.setUserDetailsService(mobileUserDetailsService);
+
+        // 将provider绑定到 HttpSecurity上，并将 手机号认证过滤器绑定到用户名密码认证过滤器之后
+        http.authenticationProvider(provider)
+                .addFilterAfter(mobileAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+    }
+}
+```
 
 
 
+### 6.3.10 绑定到安全配置 SpringSecurityConfig
 
+1. 向 `SpringSecurityConfig` 中注入 `MobileValidateFilter` 和 `MobileAuthenticationConfig` 实例 
 
+2. 将 `MobileValidateFilter` 实例添加到 `UsernamePasswordAuthenticationFilter` 前面 
 
+   ```java
+   http.addFilterBefore(mobileValidateFilter,
+   	UsernamePasswordAuthenticationFilter.class)
+   .addFilterBefore(imageCodeValidateFilter,
+   	UsernamePasswordAuthenticationFilter.class)
+   ```
 
+3. 在 `SpringSecurityConfig#configure(HttpSecurity http)` 方法体最后 调用 apply 添加 `smsCodeAuthenticationConfig `
 
+   ```java
+   http.apply(mobileAuthenticationConfig);
+   ```
 
+4. SpringSecurityConfig 完整代码
 
+   ```java
+   @Configuration
+   @EnableWebSecurity
+   @Slf4j
+   public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+   
+       @Autowired
+       private SecurityProperties securityProperties;
+   
+       @Autowired
+       private UserDetailsService customUserDetailsService;
+   
+       /**
+        * 验证码校验过滤器
+         */
+       @Autowired
+       private ImageCodeValidateFilter imageCodeValidateFilter;
+   
+       /**
+        * 注入自定义的认证成功处理器
+         */
+       @Autowired
+       private AuthenticationSuccessHandler customAuthenticationSuccessHandler;
+   
+       @Autowired
+       private AuthenticationFailureHandler customAuthenticationFailureHandler;
+   
+       @Bean
+       public PasswordEncoder passwordEncoder(){
+           return new BCryptPasswordEncoder();
+       }
+   
+       /**
+        * 认证管理器：
+        * 1、认证信息提供方式（用户名、密码、当前用户的资源权限）
+        * 2、可采用内存存储方式，也可能采用数据库方式等
+        * @param auth
+        * @throws Exception
+        */
+       @Override
+       protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+   
+           /*String password = passwordEncoder().encode("123456");
+           log.info("加密密码为："+password);
+           auth.inMemoryAuthentication()
+                   .withUser("liubin")
+                   .password(password)
+                   .authorities("admin");*/
+   
+           //用户信息存储在数据库中
+           auth.userDetailsService(customUserDetailsService);
+       }
+   
+       /**
+        * 记住我功能
+        */
+       @Autowired
+       DataSource dataSource;
+   
+       @Bean
+       public JdbcTokenRepositoryImpl jdbcTokenRepository() {
+           JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+           jdbcTokenRepository.setDataSource(dataSource);
+           return jdbcTokenRepository;
+       }
+   
+       @Autowired
+       private MobileValidateFilter mobileValidateFilter;
+   
+       @Autowired
+       private MobileAuthenticationConfig mobileAuthenticationConfig;
+       /**
+        * 资源权限配置（过滤器链）:
+        * 1、被拦截的资源
+        * 2、资源所对应的角色权限
+        * 3、定义认证方式：httpBasic 、httpForm
+        * 4、定制登录页面、登录请求地址、错误处理方式
+        * 5、自定义 spring security 过滤器
+        * @param http
+        * @throws Exception
+        */
+       @Override
+       protected void configure(HttpSecurity http) throws Exception {
+               //http.httpBasic()
+               http.addFilterBefore(mobileValidateFilter, UsernamePasswordAuthenticationFilter.class)
+                   .addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
+                   .formLogin() // 表单登录方式
+                   .loginPage("/login/page").permitAll()
+                   .loginProcessingUrl("/login/form")
+                   .usernameParameter("name")
+                   .passwordParameter("pwd")
+                   // 认证成功处理器
+                   .successHandler(customAuthenticationSuccessHandler)
+                   // 认证失败处理器
+                   .failureHandler(customAuthenticationFailureHandler)
+                   .and()
+                   .authorizeRequests() // 认证请求
+                   .antMatchers(securityProperties.getAuthentication().getLoginPage(), "/code/image","/mobile/page", "/code/mobile").permitAll()
+                   .anyRequest().authenticated() // 所有进入应用的HTTP请求都要进行认证
+                   .and()
+                   .rememberMe() //记住我
+                   //保持登陆信息
+                   .tokenRepository(jdbcTokenRepository())
+                   //保持登陆时间
+                   .tokenValiditySeconds(60*60*24*7)
+           ;
+           //将手机认证添加到过滤器链上
+           http.apply(mobileAuthenticationConfig);
+       }
+   
+       /**
+        * 针对静态资源放行
+        */
+       @Override
+       public void configure(WebSecurity web) {
+           web.ignoring().antMatchers(securityProperties.getAuthentication().getStaticPaths());
+       }
+   
+   
+       /**
+        * 针对静态资源放行
+        */
+   //    @Override
+   //    public void configure(WebSecurity web) {
+   //        web.ignoring().antMatchers("/dist/**", "/modules/**", "/plugins/**");
+   //    }
+   }
+   
+   ```
 
+### 6.3.11 编译报错未知的枚举常量
 
+**问题：** Warning:java: 未知的枚举常量 javax.annotation.meta.When.MAYBE
 
+**解决方法：**`原因是找不到默认的 javax.annotation.meta.When的类文件，缺少对应第三方依赖包，添加对应依赖包即可。`
 
+```xml
+<dependency>
+	<groupId>com.google.code.findbugs</groupId>
+	<artifactId>annotations</artifactId>
+	<version>3.0.1</version>
+</dependency>
+```
 
+### 6.3.12 重构失败处理器回到手机登录页
 
+验证码认证失败后，会回到用户名密码登录页 ，原因是在失败处理器写死了。应该动态的重写向回上一次请求路 径。
 
+```java
+@Component("customAuthenticationFailureHandler")
+//public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
+    /**
+     * @param exception 认证失败时抛出异常
+     */
+//    @Override
+//    public void onAuthenticationFailure(HttpServletRequest request,
+//            HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+//        // 认证失败响应JSON字符串，
+//        Result result = Result.build(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+//        response.setContentType("application/json;charset=UTF-8");
+//        response.getWriter().write(result.toJsonString());
+//    }
+
+    @Autowired
+    SecurityProperties securityProperties;
+
+    /**
+     * @param exception 认证失败时抛出异常
+     */
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request,
+                                        HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        if(LoginResponseType.JSON.equals(securityProperties.getAuthentication().getLoginType())) {
+            // 认证失败响应JSON字符串，
+            Result result = Result.build(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(result.toJsonString());
+        }else {
+            // 重写向回认证页面，注意加上 ?error
+            // super.setDefaultFailureUrl(securityProperties.getAuthentication().getLoginPage()+"?error");
+            // 获取上一次请求路径
+            String referer = request.getHeader("Referer");
+            logger.info("referer:" + referer);
+            String lastUrl = StringUtils.substringBefore(referer,"?");
+            logger.info("上一次请求的路径 ：" + lastUrl);
+            super.setDefaultFailureUrl(lastUrl+"?error");
+            super.onAuthenticationFailure(request, response, exception);
+        }
+    }
+}
+
+```
+
+## 6.4 实现手机登录RememberMe功能
+
+### 6.4.1 分析实现 
+
+1. 在 UsernamePasswordAuthenticationFilter 拥有一个 RememberMeServices 的引用，其实这个接收引用的是 其父抽象类 AbstractAuthenticationProcessingFilter 提供的 setRememberMeServices 方法。 
+2. 而在实现手机短信验证码登录时，我们自定了一个  MobileAuthenticationFilter  也一样的继承 了  AbstractAuthenticationProcessingFilter 它，我们只要向其 setRememberMeServices 方法手动注入一 个 RememberMeServices 实例即可。
+
+### 6.4.2 编码实现
+
+1. 在自定义的 `com.liuurick.security.authentication.mobile.MobileAuthenticationConfig` 中 向  `MobileAuthenticationFilter` 注入 `RememberMeServices` 实例，该实例从共享对象中就可以获取到。
+
+   ```java
+   // 为了实现手机登录也拥有记住我的功能,将RememberMeServices传入
+   smsCodeAuthenticationFilter.setRememberMeServices(
+   	http.getSharedObject(RememberMeServices.class));
+   ```
+
+2. 检查 记住我 的 input 标签的 name="remember-me"
+
+3. MobileAuthenticationConfig 完整代码
+
+### 6.4.3 测试
+
+1. 重启项目 
+2. 访问 http://localhost/mobile/page 输入手机号与验证码, 勾选 记住我  , 点击登录
+3. 查看数据库中 persistent_logins 表的记录
+4. 关闭浏览器, 再重新打开浏览器访问 http://localhost/index , 发现会跳转回用户名密码登录页, 而正常应该勾选了 记住我  , 这一步应该是可以正常访问的.
+
+**上面要求认证的原因是:** 
+
+数据库中 username 为 手机号 16888888888, 当你访问 http://localhost/index 默认RememberMeServices 是调 用 CustomUserDetailsService  通过用户名查询, 而当前在 CustomUserDetailsService 判断了用户名为 meng 才通过认证, 而此时传入的用户名是 16888888888 , 所以查询不到 16888888888 用户数据
+
+**解决方案:** 
+
+1. 数据库中的 persistent_logins 表为什么存储的是手机号? 
+
+   原因是当前在 MobileUserDetailsService 中返回的 User 对象中的 username 属性设置的是手机号 mobile, 而应该设置这个手机号所对应的那个用户名. 比如当前username 的值写死为 liubin
+
+   ```java
+   @Component("mobileUserDetailsService")
+   @Slf4j
+   public class MobileUserDetailsService implements UserDetailsService {
+   
+       @Override
+       public UserDetails loadUserByUsername(String mobile) throws UsernameNotFoundException {
+           log.info("请求的手机号是：" + mobile);
+           // 1. 通过手机号查询用户信息
+           // 2. 如果有用户信息，则再获取权限资源
+           // 3. 封装用户信息
+   
+           return new User("liubin", "", true, true, true, true,
+                   AuthorityUtils.commaSeparatedStringToAuthorityList("ADMIN"));
+       }
+   }
+   ```
+
+2. 勾选 `记住我` 重新登录，发现表中的username字段值就是 liubin
+
+3. 关闭浏览再打开访问http://localhost/ 就无需手动登录认证了。 因为默认采用的 `CustomUserDetailsService` 查询可查询到用户名为 liubin 的信息，即认证通过。
+
+## 6.5 获取当前用户认证信息
+
+### 6.5.1 概要 
+
+在任意地方（Controller/Service等），通过 `SecurityContextHolder` 类获取 `getContext` 上下文， `getAuthentication` 获取当前用户认证信息 , getPrincipal 获取 UserDetails 。
+
+### 6.5.2 三种获取方式 
+
+重构 `security-web` 模块的 `com.liuurick.web.controller.MainController`
+
+方式一：
+
+```java
+	@RequestMapping({"/index", "/", ""})
+    public String index(Map<String, Object> map) {
+        // 方式1: 获取登录用户信息
+        Object principal =
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal != null && principal instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) principal;
+            map.put("username", userDetails.getUsername());
+        }
+        return "index";
+    }
+```
+
+方式二：
+
+```java
+	/**
+     * 获取当前登录用户信息, 方式2 注入 Authentication
+     * @return
+     */
+    @RequestMapping("/user/info")
+    @ResponseBody
+    public Object userInfo(Authentication authentication) {
+        return authentication.getPrincipal();
+    }
+```
+
+方式三：
+
+```java
+	/**
+     * 获取当前登录用户信息, 方式3 注入 UesrDetails
+     * @return
+     */
+    @RequestMapping("/user/info2")
+    @ResponseBody
+    public Object userInfo2(@AuthenticationPrincipal UserDetails userDetails) {
+        return userDetails;
+    }
+```
+
+### 6.5.3 重构左侧菜单显示用户名
+
+打开 fragments\main-sidebar.html 页面 `Ctrl + F `搜索: 梦老师  , 在标签上使用 th:text="${username}" 获取用户名
+
+```html
+<div class="info">
+	<a th:text="${username}" href="#" class="d-block">梦老师</a>
+</div>
+```
+
+## 6.6 重构实现路径可配置
+
+1. 在 application.yml 添加四个属性 `imageCodeUrl` `mobileCodeUrl` `mobilePage` `tokenValiditySeconds`
+
+   ```yml
+   imageCodeUrl: /code/image # 获取图形验证码 url
+   mobileCodeUrl: /code/mobile # 发送手机验证码 url
+   mobilePage: /mobile/page # 前往手机登录页面地址
+   tokenValiditySeconds: 604800 # 记住我有效时长，单位秒， 注意不要用乘法*，会被认为字符串
+   ```
+
+2. 在 `AuthenticationProperties` 添加以下属性, 在类上加了 `@Data` 注解, 把 `setter / getter` 方法全部删除
+
+   ```java
+   @Data
+   public class AuthenticationProperties {
+   
+       private String loginPage = "/login/page";
+       private String loginProcessingUrl = "/login/form";
+       private String usernameParameter = "name";
+       private String passwordParameter = "pwd";
+       private String[] staticPaths = {"/dist/**", "/modules/**", "/plugins/**"};
+   
+   
+       /**
+        * 登录成功后响应 JSON , 还是重定向
+        * 如果application.yml 中没有配置，则取此初始值 REDIRECT
+       */
+       private LoginResponseType loginType = LoginResponseType.REDIRECT;
+   
+       public LoginResponseType getLoginType() {
+           return loginType;
+       }
+       public void setLoginType(LoginResponseType loginType) {
+           this.loginType = loginType;
+       }
+   
+       /**
+        * 获取图形验证码 url
+        */
+       private String imageCodeUrl = "/code/image";
+       /**
+        * 发送手机验证码 url
+        */
+       private String mobileCodeUrl = "/code/mobile";
+       /**
+        * 前往手机登录页面地址
+        */
+       private String mobilePage = "/mobile/page";
+       /**
+        * 记住我有效时长
+        */
+       private Integer tokenValiditySeconds = 60*60*24*7;
+   
+   }
+   ```
+
+   
+
+   
 
 # 7 Session 会话管理与Redis搭建Session集群
 
