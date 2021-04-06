@@ -457,15 +457,15 @@ public interface Job {
 
 **Job实例在Quartz中的生命周期**
 
-​		每次调度器执行job时，它在调用execute方法前会创建一个新的job实例
+每次调度器执行job时，它在调用execute方法前会创建一个新的job实例
 
-​		当调用完成后，关联的job对象实例会被释放，释放的实例会被垃圾回收机制回收。
+当调用完成后，关联的job对象实例会被释放，释放的实例会被垃圾回收机制回收。
 
 
 
 **浅谈JobDetail**
 
-​		JobDetail为Job实例提供了许多设置属性，以及JobDetailMap成员变量属性，它用来存储特定Job实例的状态信息，调度器需要借助JobDetail对象来添加Job实例。
+JobDetail为Job实例提供了许多设置属性，以及JobDetailMap成员变量属性，它用来存储特定Job实例的状态信息，调度器需要借助JobDetail对象来添加Job实例。
 
 
 
