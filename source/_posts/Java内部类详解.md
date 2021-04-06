@@ -1,6 +1,6 @@
 ---
 title: Java内部类详解
-date: 2021-12-27 11:09:06
+date: 2020-12-27 11:09:06
 tags: 内部类
 categories: [编程基础,Java语言,JavaSE基础]
 ---
