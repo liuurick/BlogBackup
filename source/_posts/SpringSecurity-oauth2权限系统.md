@@ -1072,7 +1072,7 @@ public class ValidateCodeExcetipn extends AuthenticationException {
 </dependency
 ```
 
-2. mengxuegu-security-web 的 application.yml 配置数据源,
+2. liuurick-security-web 的 application.yml 配置数据源,
 
 ```yml
 spring:
@@ -1990,11 +1990,388 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
    }
    ```
 
-   
-
-   
 
 # 7 Session 会话管理与Redis搭建Session集群
+
+## 7.1 配置 Session 会话超时
+
+### 7.1.1 application.yml 配置超时时间
+
+```yml
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 1m # session超时时间默认30m (30分钟)，至少设置1分钟
+```
+
+
+
+
+
+### 7.1.2 底层源码分析 
+
+TomcatServletWebServerFactory#configureSession
+
+```java
+private void configureSession(Context context) {
+	// 获取超时时长
+	long sessionTimeout = this.getSessionTimeoutInMinutes();
+}
+private long getSessionTimeoutInMinutes() {
+// Math.max(sessionTimeout.toMinutes(), 1L) 至少1分钟 , 配置小于1分钟也取1分钟
+	Duration sessionTimeout = this.getSession().getTimeout();
+	return this.isZeroOrLess(sessionTimeout) ? 0L : Math.max(sessionTimeout.toMinutes(), 1L);
+}
+```
+
+
+
+## 7.2 自定义 Session 失效处理
+
+默认情况下，当 session 失效后会请求回认证页面。我们可以自定义 session 失效后，响应不同的结果。 
+
+1. 添加session失效处理：com.liuurick.security.config.SpringSecurityConfig
+
+   ```java
+   注入session失败策略
+   @Autowired
+   private InvalidSessionStrategy invalidSessionStrategy;
+   配置 session 管理
+   .and()
+   .sessionManagement()
+   .invalidSessionStrategy(invalidSessionStrategy) // session失效后处理逻辑
+   ```
+
+2. 在 security-core 工程中创建 com.liuurick.security.authentication.session.CustomInvalidSessionStrategy
+
+   ```java
+   public class CustomInvalidSessionStrategy implements InvalidSessionStrategy {
+       @Override
+       public void onInvalidSessionDetected(HttpServletRequest request,
+                                            HttpServletResponse response) throws IOException {
+           // 将浏览器的sessionid清除，不关闭浏览器cookie不会被删除，一直请求都提示：Session失效
+           cancelCookie(request, response);
+           Result result = Result.build(
+                   HttpStatus.UNAUTHORIZED.value(), "登录已超时, 请重新登录");
+           response.setContentType("application/json;charset=utf-8");
+           response.getWriter().write(result.toJsonString());
+       }
+   
+       /**
+        *  参考记住我功能的 AbstractRememberMeServices 代码
+         */
+       protected void cancelCookie(HttpServletRequest request, HttpServletResponse response) {
+           Cookie cookie = new Cookie("JSESSIONID", null);
+           cookie.setMaxAge(0);
+           cookie.setPath(getCookiePath(request));
+           response.addCookie(cookie);
+       }
+   
+       private String getCookiePath(HttpServletRequest request) {
+           String contextPath = request.getContextPath();
+           return contextPath.length() > 0 ? contextPath : "/";
+       }
+   }
+   ```
+
+3. 注入Session失效策略实例, 在 com.liuurick.security.config.SecurityConfigBean 添加方法注入方便web应用覆盖此实现,定义不同逻辑
+
+   ```java
+   @Configuration
+   public class SecurityConfigBean {
+   
+       @Bean
+       @ConditionalOnMissingBean(SessionInformationExpiredStrategy.class)
+       public SessionInformationExpiredStrategy sessionInformationExpiredStrategy() {
+           return new CustomSessionInformationExpiredStrategy();
+       }
+   
+       /**
+        * 注入Session失效策略实例
+        * @return
+        */
+       @Bean
+       @ConditionalOnMissingBean(InvalidSessionStrategy.class)
+       public InvalidSessionStrategy invalidSessionStrategy() {
+           return new CustomInvalidSessionStrategy();
+       }
+   
+       /**
+        * @ConditionalOnMissingBean(SmsSend.class)
+        * 默认情况下，采用的是SmsCodeSender实例 ，
+        * 但是如果容器当中有其他的SmsSend类型的实例，
+        * 那当前的这个SmsCodeSender就失效 了
+        * @return
+        */
+       @Bean
+       @ConditionalOnMissingBean(SmsSend.class)
+       public SmsSend smsSend() {
+           return new SmsCodeSender();
+       }
+   }
+   ```
+
+4. 测试 
+
+   1. 先登录
+   2. 再重启项目让session失效 
+   3. 再访问: 提示超时
+
+## 7.3 用户只允许一个地方登录 
+
+只允许一个用户在一个地方登录，也是每个用户在系统中只能有一个Session。 
+
+### 7.3.1 情景一 
+
+说明 如果同一用户在第2个地方登录，则将第1个踢下线。 
+
+实现步骤 重构 com.liuurick.security.config.SpringSecurityConfig
+
+```java
+注入session失败策略
+@Autowired
+private InvalidSessionStrategy invalidSessionStrategy;
+@Autowired
+private SessionInformationExpiredStrategy sessionInformationExpiredStrategy;
+配置 Session 管理
+.and()
+.sessionManagement()
+.invalidSessionStrategy(invalidSessionStrategy) // session失效后处理逻辑
+.maximumSessions(1) // 每个用户在系统中的最大session数
+.expiredSessionStrategy(sessionInformationExpiredStrategy)// 当用户达到最大session数后，则调用此处的实现
+```
+
+自定义 SessionInformationExpiredStrategy 实现类来定制策略
+
+```java
+public class CustomSessionInformationExpiredStrategy implements SessionInformationExpiredStrategy {
+    @Autowired
+    CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+    @Override
+    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException {
+        // 1.获取用户名
+        UserDetails userDetails =
+                (UserDetails)event.getSessionInformation().getPrincipal();
+        AuthenticationException exception =
+                new AuthenticationServiceException(String.format("[%s]用户在另外一台电脑登录，您已被下线",
+                        userDetails.getUsername()));
+        try {
+            event.getRequest().setAttribute("toAuthentication", true);
+            customAuthenticationFailureHandler.onAuthenticationFailure(
+                    event.getRequest(), event.getResponse(), exception);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+重构 com.liuurick.security.authentication.CustomAuthenticationFailureHandler 处理器: 如果isAuthentication值为true，说明是session数量超过，则回到 /login/page
+
+```java
+String referer = request.getHeader("Referer");
+logger.info("referer:" + referer);
+
+// 如果下面有值,则认为是多端登录,直接返回一个登录地址
+Object toAuthentication = request.getAttribute("toAuthentication");
+String lastUrl = toAuthentication != null ? securityProperties.getAuthentication().getLoginPage()
+    : StringUtils.substringBefore(referer,"?");
+
+logger.info("上一次请求的路径 ：" + lastUrl);
+super.setDefaultFailureUrl(lastUrl+"?error");
+super.onAuthenticationFailure(request, response, exception);
+```
+
+com.liuurick.security.config.SecurityConfigBean 添加方法注入SessionInformationExpiredStrategy实现 方便web应用覆盖此实现,定义不同逻辑
+
+```java
+@Bean
+@ConditionalOnMissingBean(SessionInformationExpiredStrategy.class)
+public SessionInformationExpiredStrategy sessionInformationExpiredStrategy() {
+	return new CustomSessionInformationExpiredStrategy();
+}
+```
+
+测试： 
+
+1. 谷歌浏览器用户名密码登录 
+2. 再QQ浏览器用户名密码登录 
+3. 回到谷歌浏览器刷新请求，发现回到登录页面，提示被下线
+
+
+
+### 7.3.2 情景二
+
+**说明** 
+
+如果同一用户在第2个地方登录时，则不允许他二次登录。 
+
+**实现步骤** 
+
+1. 在 SpringSecurityConfig 添加 maxSessionsPreventsLogin(true) 后不允许二次登录
+
+   ```java
+   .and()
+   .sessionManagement()
+   .invalidSessionStrategy(invalidSessionStrategy) // session失效后处理逻辑
+   .maximumSessions(1) // 每个用户在系统中的最大session数
+   .expiredSessionStrategy(sessionInformationExpiredStrategy)// 当用户达到最大session数后，则调用此处的实现
+   .maxSessionsPreventsLogin(true)// 当一个用户达到最大session数，则不允许后面进行登录
+   ```
+
+2. 测试 
+
+   1. 谷歌浏览器用户名密码登录 
+   2. 再QQ浏览器用户名密码登录，发现不允许登录
+
+
+
+### 7.3.3 解决同一用户的手机重复登录问题 
+
+问题描述： 使用了 admin 用户名登录后，还可以使用这个用户的手机号登录
+
+正常应该是同一个用户，系统中只能用用户名或手机号登录一次。
+
+**解决问题**： 原因是 MobileAuthenticationFilter 继承的类 AbstractAuthenticationProcessingFilter 中，默认使用 了 NullAuthenticatedSessionStrategy 实例管理 Session，我们应该指定用户名密码过滤器中所使用的那个 SessionAuthenticationStrategy 实现类 CompositeSessionAuthenticationStrategy 。 
+
+在 com.liuurick.security.authentication.mobile.MobileAuthenticationConfig 指定即可解决：
+
+```java
+// session 会话管理功能
+mobileAuthenticationFilter.setSessionAuthenticationStrategy(http.getSharedObject(SessionAuthenticationStrategy.class));
+```
+
+## 7.4 Redis 实现 Session 高可用集群
+
+### 7.4.1 概述 
+
+如果采用默认的单机版 Session 存储身份信息时, 一旦这台服务器挂了就没法使用. 那我们可以为项目搭建集群, 部署到AB 两台服务器上, 但是部署到AB 两台服务器上, Session就没有保证一致, 假设 user1 第1次登录访问的是 A服务器, 后面访问资源时请求到了B服务器,而当前B并没有存储用户session,这样 又会要求用户再次登录 , 所以目前方式也是不可以的,不能让用户到两台机器上各认证一次,应该在一台机器上认证即可. 不管用户访问哪台服务器, 我们将用户的session 都放到 redis , 后面请求都从 redis 获取 session, 这样可以保证一 致性.
+
+### 7.4.2 操作步骤 
+
+所支持的存储方式参见: `org.springframework.boot.autoconfigure.session.StoreType `
+
+1. 以 管理员身份运行 Redis-x64-3.2.100\redis-server.exe 
+
+2. security-core\pom.xml 添加对 redis 的支持
+
+   ```xml
+   <!--采用redis来管理session-->
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-data-redis</artifactId>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.session</groupId>
+       <artifactId>spring-session-data-redis</artifactId>
+   </dependency>
+   ```
+
+3. application.yml 指定存储方式 redis
+
+   ```yml
+   spring:
+     thymeleaf:
+       cache: false #关闭thymeleaf缓存
+     # 数据源配置
+     datasource:
+       username: root
+       password: 123456
+       url: jdbc:mysql://127.0.0.1:3306/study-security?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8
+       #mysql8版本以上驱动包指定新的驱动类
+       driver-class-name: com.mysql.cj.jdbc.Driver
+     session:
+       store-type: redis
+   ```
+
+4. 重启项目, 进行登录 
+
+5. 管理员身份运行客户端 Redis-x64-3.2.100\redis-cli.exe 执行 keys * 命令查看保存的数据
+
+
+
+### 7.4.3 指定 Cookie 中保存SessionID名称
+
+**说明** 
+
+1. 默认情况下, 浏览器的 Cookie 中保存 SessionID 名称是 `JSESSIONID` ,
+
+2. 当使用redis保存session信息后, 浏览器的 Cookie 中保存 SessionID 名称是 `SESSION` ,
+
+这样会导致当session失效后，在 CustomInvalidSessionStrategy 中只将 JSESSIONID 清除是不行的，不管刷新请求多少次，都是提示：登录已超时，请重新登录。
+
+
+
+
+
+**现象** 
+
+1. 先登录 
+2. redis 使用 flushall 命令清除所有数据，即将session值失效 
+3. 再刷新多次浏览器，一直提示：登录已超时，请重新登录
+
+
+
+**解决** 
+
+统一指定浏览器中 Cookie 保存的 SessionID 名称为 JSESSIONID
+
+```yml
+erver:
+ port: 80
+ servlet:
+   session:
+     timeout: 10m # session会话超时时间，默认情况 下是30分钟（m）,不能小于1分钟
+     cookie:
+       name: JSESSIONID # 统一指定浏览器中 Cookie  保存的SessionID名称
+```
+
+如果想关闭 redis 存储 session, 作如下配置：
+
+```yml
+spring:
+ session:
+   store-type: none
+```
+
+未关闭，则每次要启动redis服务器， Redis-x64-3.2.100\redis-server.exe
+
+
+
+## 7.5 退出系统 
+
+### 7.5.1 退出系统默认配置
+
+1. 默认请求 /logout 即可退出系统，在 templates/fragments/main-header.html 指定退出URL ，如下：
+
+   ```html
+   <a th:href="@{/logout}" href="login.html" class="dropdown-item" >
+       <i class="fa fa-sign-out mr-2"></i> 退出系统
+   </a>
+   ```
+
+2. 点击 退出系统 会报404 
+
+会报-报404原因: 
+
+默认情况下 /logout 必须使用POST提交才可以起作用, 原因是防止 csrf (跨站请求伪造 ) 功能默认开启了 
+
+**解决问题:** 
+
+在 SpringSecurityConfig 关闭 csrf , 即可使用 get 方式请求 /logout
+
+```
+; // 注意不要少了分号
+http.csrf().disable(); // 关闭跨站请求伪造
+```
+
+退出后的效果 ： `/login/page?error`
+
+
+
+\3. 底层默认退出处理操作： 1. 清除浏览器 remember-me 的 Cookie、通过用户名删除 remember-me 数据库记录 2. 将当前用户的 Session 失效，清空当前用户的 Authentication 3. 重写向到登录页面，带上error请求参数，地址： /login/page?error
 
 
 
