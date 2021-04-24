@@ -2304,8 +2304,6 @@ mobileAuthenticationFilter.setSessionAuthenticationStrategy(http.getSharedObject
 
 
 
-
-
 **现象** 
 
 1. 先登录 
@@ -2369,12 +2367,26 @@ http.csrf().disable(); // 关闭跨站请求伪造
 
 退出后的效果 ： `/login/page?error`
 
-
-
 3. 底层默认退出处理操作： 
    1. 清除浏览器 remember-me 的 Cookie、通过用户名删除 remember-me 数据库记录 
    2. 将当前用户的 Session 失效，清空当前用户的 Authentication 
    3. 重写向到登录页面，带上error请求参数，地址： /login/page?error
+
+
+
+### 7.5.3 解决退出不允许再次登录
+
+**现象** 
+
+配置了 `.maxSessionsPreventsLogin(true)` 开启了前面已登录，不允许再重复登录 上面默认情况，如果登录后，然后请求 `/logout` 退出，再重新登录时，会提示不能重复登录。
+
+**解决方案** 
+
+添加一个退出处理器 `com.liuurick.security.authentication.session.CustomLogoutHandler` ,将用户信息从缓存中清除
+
+
+
+
 
 
 
@@ -2425,6 +2437,418 @@ http.csrf().disable(); // 关闭跨站请求伪造
 课时74视频手机号登录数据库动态身份认证05:55
 
 课时75视频模板设计模式重构动态身份认证12:40
+
+
+
+
+
+# 9 整合 MyBatis-Plus 实现数据库动态认证
+
+## 9.1 什么是RBAC模型
+
+基于RBAC模型（Role-Based Access Control）角色的权限访问控制
+
+- 用户表( sys_user )：保存用户信息
+- 角色表 ( sys_role )：保存角色信息
+- 权限表 ( sys_permission )：保存系统资源信息。如：菜单、按钮 和对应 URL
+  - 它们的关系 ：用户表与角色表是 多对多关系 ，角色表与资源表是多对多关系。
+- 用户角色关系表（sys_user_role）：用于维护用户和角色的关系
+- 角色资源关系表（sys_role_permission）：用于维护角色与资源的关系
+
+![image-20210418170832529](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20210418170832529.png)
+
+## 9.2 整合 MyBatis-Plus 和 Druid
+
+MyBatis-Plus（简称 MP）是一个 MyBatis 的增强工具，在 MyBatis 的基础上**只做增强不做改变**，为简化开发、提 高效率而生。 
+
+> MyBatis 参考：https://mybatis.org/mybatis-3/zh/index.html 
+>
+> MyBatis-Plus 参考：https://mp.baomidou.com/
+
+### 9.2.1 创建数据库 
+
+```sql
+-- ----------------------------
+-- Table structure for sys_permission 
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_permission`;
+CREATE TABLE `sys_permission` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '权限 ID',
+  `parent_id` bigint(20) DEFAULT NULL COMMENT '父权限 ID (0为顶级菜单)',
+  `name` varchar(64) NOT NULL COMMENT '权限名称',
+  `code` varchar(64) DEFAULT NULL COMMENT '授权标识符',
+  `url` varchar(255) DEFAULT NULL COMMENT '授权路径',
+  `type` int(2) NOT NULL DEFAULT '1' COMMENT '类型(1菜单，2按钮)',
+  `icon` varchar(200) DEFAULT NULL COMMENT '图标',
+  `remark` varchar(200) DEFAULT NULL COMMENT '备注',
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 COMMENT='权限表';
+
+-- ----------------------------
+-- Records of sys_permission
+-- ----------------------------
+INSERT INTO `sys_permission` VALUES ('11', '0', '首页', 'sys:index', '/', '1', 'fa fa-dashboard', '', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('17', '0', '系统管理', 'sys:manage', null, '1', 'fa fa-cogs', null, '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('18', '17', '用户管理', 'sys:user', '/user', '1', 'fa fa-users', null, '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('19', '18', '列表', 'sys:user:list', '', '2', '', '员工列表', '2023-08-08 11:11:11', '2023-08-08 11:11:11');
+INSERT INTO `sys_permission` VALUES ('20', '18', '新增', 'sys:user:add', '', '2', '', '新增用户', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('21', '18', '修改', 'sys:user:edit', '', '2', '', '修改用户', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('22', '18', '删除', 'sys:user:delete', '', '2', '', '删除用户', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('23', '17', '角色管理', 'sys:role', '/role', '1', 'fa fa-user-secret', null, '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('24', '23', '列表', 'sys:role:list', null, '2', null, '角色列表', '2023-08-08 11:11:11', '2023-08-08 11:11:11');
+INSERT INTO `sys_permission` VALUES ('25', '23', '新增', 'sys:role:add', '', '2', '', '新增角色', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('26', '23', '修改', 'sys:role:edit', '', '2', '', '修改角色', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('27', '23', '删除', 'sys:role:delete', '', '2', '', '删除角色', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('28', '17', '权限管理', 'sys:permission', '/permission', '1', 'fa fa-cog', null, '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('29', '28', '列表', 'sys:permission:list', null, '2', null, '权限列表', '2023-08-08 11:11:11', '2023-08-08 11:11:11');
+INSERT INTO `sys_permission` VALUES ('30', '28', '新增', 'sys:permission:add', '', '2', null, '新增权限', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('31', '28', '修改', 'sys:permission:edit', '', '2', null, '修改权限', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+INSERT INTO `sys_permission` VALUES ('32', '28', '删除', 'sys:permission:delete', '', '2', '', '删除权限', '2023-08-08 11:11:11', '2023-08-09 15:26:28');
+
+-- ----------------------------
+-- Table structure for sys_role
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_role`;
+CREATE TABLE `sys_role` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '角色 ID',
+  `name` varchar(64) NOT NULL COMMENT '角色名称',
+  `remark` varchar(200) DEFAULT NULL COMMENT '角色说明',
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='角色表';
+
+-- ----------------------------
+-- Records of sys_role
+-- ----------------------------
+INSERT INTO `sys_role` VALUES ('9', '超级管理员', '拥有所有的权限', '2023-08-08 11:11:11', '2023-08-08 11:11:11');
+INSERT INTO `sys_role` VALUES ('10', '普通管理员', '拥有查看权限', '2023-08-08 11:11:11', '2023-08-08 11:11:11');
+
+-- ----------------------------
+-- Table structure for sys_role_permission
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_role_permission`;
+CREATE TABLE `sys_role_permission` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
+  `role_id` bigint(20) NOT NULL COMMENT '角色 ID',
+  `permission_id` bigint(20) NOT NULL COMMENT '权限 ID',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COMMENT='角色权限表';
+
+-- ----------------------------
+-- Records of sys_role_permission
+-- ----------------------------
+INSERT INTO `sys_role_permission` VALUES ('1', '9', '11');
+INSERT INTO `sys_role_permission` VALUES ('2', '9', '17');
+INSERT INTO `sys_role_permission` VALUES ('3', '9', '18');
+INSERT INTO `sys_role_permission` VALUES ('4', '9', '19');
+INSERT INTO `sys_role_permission` VALUES ('5', '9', '20');
+INSERT INTO `sys_role_permission` VALUES ('6', '9', '21');
+INSERT INTO `sys_role_permission` VALUES ('7', '9', '22');
+INSERT INTO `sys_role_permission` VALUES ('8', '9', '23');
+INSERT INTO `sys_role_permission` VALUES ('9', '9', '24');
+INSERT INTO `sys_role_permission` VALUES ('10', '9', '25');
+INSERT INTO `sys_role_permission` VALUES ('11', '9', '26');
+INSERT INTO `sys_role_permission` VALUES ('12', '9', '27');
+INSERT INTO `sys_role_permission` VALUES ('13', '9', '28');
+INSERT INTO `sys_role_permission` VALUES ('14', '9', '29');
+INSERT INTO `sys_role_permission` VALUES ('15', '9', '30');
+INSERT INTO `sys_role_permission` VALUES ('16', '9', '31');
+INSERT INTO `sys_role_permission` VALUES ('17', '9', '32');
+INSERT INTO `sys_role_permission` VALUES ('18', '10', '11');
+INSERT INTO `sys_role_permission` VALUES ('19', '10', '17');
+INSERT INTO `sys_role_permission` VALUES ('20', '10', '18');
+INSERT INTO `sys_role_permission` VALUES ('21', '10', '19');
+INSERT INTO `sys_role_permission` VALUES ('22', '10', '23');
+INSERT INTO `sys_role_permission` VALUES ('23', '10', '24');
+INSERT INTO `sys_role_permission` VALUES ('24', '10', '28');
+INSERT INTO `sys_role_permission` VALUES ('25', '10', '29');
+
+-- ----------------------------
+-- Table structure for sys_user
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_user`;
+CREATE TABLE `sys_user` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '用户 ID',
+  `username` varchar(50) NOT NULL COMMENT '用户名',
+  `password` varchar(64) NOT NULL COMMENT '密码，加密存储, admin/1234',
+  `is_account_non_expired` int(2) DEFAULT '1' COMMENT '帐户是否过期(1 未过期，0已过期)',
+  `is_account_non_locked` int(2) DEFAULT '1' COMMENT '帐户是否被锁定(1 未过期，0已过期)',
+  `is_credentials_non_expired` int(2) DEFAULT '1' COMMENT '密码是否过期(1 未过期，0已过期)',
+  `is_enabled` int(2) DEFAULT '1' COMMENT '帐户是否可用(1 可用，0 删除用户)',
+  `nick_name` varchar(64) DEFAULT NULL COMMENT '昵称',
+  `mobile` varchar(20) DEFAULT NULL COMMENT '注册手机号',
+  `email` varchar(50) DEFAULT NULL COMMENT '注册邮箱',
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`) USING BTREE,
+  UNIQUE KEY `mobile` (`mobile`) USING BTREE,
+  UNIQUE KEY `email` (`email`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='用户表';
+
+-- ----------------------------
+-- Records of sys_user
+-- ----------------------------
+INSERT INTO `sys_user` VALUES ('9', 'admin', '$2a$10$rDkPvvAFV8kqwvKJzwlRv.i.q.wz1w1pz0SFsHn/55jNeZFQv/eCm', '1', '1', '1', '1', '梦学谷', '16888888888', 'mengxuegu888@163.com', '2023-08-08 11:11:11', '2019-12-16 10:25:53');
+INSERT INTO `sys_user` VALUES ('10', 'test', '$2a$10$rDkPvvAFV8kqwvKJzwlRv.i.q.wz1w1pz0SFsHn/55jNeZFQv/eCm', '1', '1', '1', '1', '测试', '16888886666', 'test11@qq.com', '2023-08-08 11:11:11', '2023-08-08 11:11:11');
+
+-- ----------------------------
+-- Table structure for sys_user_role
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_user_role`;
+CREATE TABLE `sys_user_role` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
+  `user_id` bigint(20) NOT NULL COMMENT '用户 ID',
+  `role_id` bigint(20) NOT NULL COMMENT '角色 ID',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='用户角色表';
+
+-- ----------------------------
+-- Records of sys_user_role
+-- ----------------------------
+INSERT INTO `sys_user_role` VALUES ('1', '9', '9');
+INSERT INTO `sys_user_role` VALUES ('2', '10', '10');
+
+-- 获取id=9的用户权限信息
+SELECT
+	DISTINCT p.id,	p.parent_id, p.name, p.code, p.url, p.type,
+	p.icon, p.remark, p.create_date, p.update_date
+FROM
+  sys_user AS u
+  LEFT JOIN sys_user_role AS ur
+	ON u.id = ur.user_id
+  LEFT JOIN sys_role AS r
+	ON r.id = ur.role_id
+  LEFT JOIN sys_role_permission AS rp
+	ON r.id = rp.role_id
+  LEFT JOIN sys_permission AS p
+	ON p.id = rp.permission_id
+WHERE u.id = 9
+ORDER BY p.id
+```
+
+### 9.2.2 添加依赖
+
+```xml
+<!--mybatis-plus启动器-->
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-boot-starter</artifactId>
+</dependency>
+<!--druid连接池-->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid</artifactId>
+</dependency>
+```
+
+### 9.2.3 配置数据源 application.yml
+
+重构 security-web\resources\application.yml
+
+```
+spring:
+ session:
+   store-type: none # session存储方式采用 redis
+ redis: # 如果是本地redis可不配置
+   port: 6379
+ thymeleaf:
+   cache: false #关闭thymeleaf缓存
+# 数据源配置
+ datasource:
+   username: root
+   password: 123456
+   url: jdbc:mysql://127.0.0.1:3306/study-security?
+serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8
+    #mysql8版本以上驱动包指定新的驱动类
+   driver-class-name: com.mysql.cj.jdbc.Driver
+   type: com.alibaba.druid.pool.DruidDataSource
+    #   数据源其他配置, 在 DruidConfig配置类中手动绑定
+   initialSize: 8
+   minIdle: 5
+   maxActive: 20
+   maxWait: 60000
+   timeBetweenEvictionRunsMillis: 60000
+   minEvictableIdleTimeMillis: 300000
+   validationQuery: SELECT 1 FROM DUAL
+    
+mybatis-plus:
+  # 指定实体类所有包
+ type-aliases-package: com.mengxuegu.web.entities
+# 日志级别，会打印sql语句
+logging:
+ level:
+   com.liuurick.web.mapper: debug
+server:
+ port: 80
+ servlet:
+   session:
+     timeout: 30m # session会话超时时间，默认情况 下是30分钟（m）,不能小于1分钟
+     cookie:
+       name: JSESSIONID # 指定浏览器Cookie中关于SessionID保存的那个名称
+
+liuurick:
+       security:
+         authentication:
+           loginPage: /login/page # 响应认证(登录)页面的URL
+           loginProcessingUrl: /login/form # 登录表单提交处理的url
+           usernameParameter: name # 登录表单提交的用户名的属性名
+           passwordParameter: pwd  # 登录表单提交的密码的属性名
+           staticPaths: # 静态资源 "/dist/**", "/modules/**", "/plugins/**"
+           - /dist/**
+           - /modules/**
+           - /plugins/**
+           loginType: REDIRECT # 认证之后 响应的类型：JSON/REDIRECT # "/code/image","/mobile/page", "/code/mobile"
+           imageCodeUrl: /code/image # 获取图形验证码地址
+           mobileCodeUrl: /code/mobile # 发送手机验证码地址
+           mobilePage: /mobile/page # 前往手机登录页面
+           tokenValiditySeconds: 604800 # 记住我功能有效时长
+
+```
+
+
+
+### 9.2.4 创建 DruidConfig
+
+指定Druid数据源，并注入数据源配置。 在 security-web 模块下创建 `com.liuurick.web.config.DruidConfig`
+
+```java
+@Configuration
+public class DruidConfig {
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public DataSource druid() {
+        return new DruidDataSource();
+    }
+}
+```
+
+创建 MybatisPlusConfig 在 security-web 中创建配置类  `com.liuurick.web.config.MybatisPlusConfig`
+
+```java
+@EnableTransactionManagement
+@MapperScan("com.liuurick.web.mapper")
+@Configuration
+public class MybatisPlusConfig {
+    /**
+     * 分页插件
+     */
+    @Bean
+    public PaginationInterceptor paginationInterceptor() {
+        PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
+        return paginationInterceptor;
+    }
+}
+```
+
+**测试** 
+
+启动项目，查看控制台没有报错则整合成功
+
+
+
+## 9.3 编码用户管理 SysUser
+
+### 9.3.1 创建实体类 SysUser
+
+创建 `com.liuurick.web.entities.SysUser` 实体类，实现 `UserDetails` 认证用户信息封装接口 
+
+**注意** ：在 `authorities` 属性上面加上 @TableField(exist = false) ，因为它不是 sys_user 数据库表字段。
+
+
+
+### 9.3.2 编写 Mapper 接口
+
+创建 `com.liuurick.web.mapper.SysUserMapper` 继承 `BaseMapper` 接口 实现MyBatis-Plus封装的 BaseMapper 接口,它有很多对 T 表的数据操作方法
+
+```java
+**
+* 实现MyBatis-Plus封装的 BaseMapper<T> 接口,它有很多对 T 表的数据操作方法
+* @Auther: 梦学谷 www.mengxuegu.com
+*/
+public interface SysUserMapper extends BaseMapper<SysUser> {
+}
+```
+
+### 9.3.3 编写 Service 类 
+
+创建接口`com.liuurick.web.service.SysUserService`继承 IService 接口 实现 IService 接口，提供了常用更复杂的对 T 数据表的操作，比如：支持 Lambda 表达式，批量删除、自动新增或更新操 作等方法定义一个通过用户名查询用户信息的抽象方法 `findByUsername`
+
+```java
+/**
+* 实现 IService<T> 接口，提供了常用更复杂的对 T 数据表的操作，
+* 比如：支持 Lambda 表达式，批量删除、自动新增或更新操作
+* @Auther: 梦学谷 www.mengxuegu.com
+*/
+public interface SysUserService extends IService<SysUser> {
+    /**
+     * 通过用户名查询
+     * @param username 用户名
+     * @return 用户信息
+     */
+    SysUser findByUsername(String username);
+}
+```
+
+### 9.3.4 创建实现类 
+
+`com.liuurick.web.service.impl.SysUserServiceImpl` 继承 `ServiceImpl` 类 , 并且实现 `SysUserService` 接口. 
+
+ServiceImpl<M extends BaseMapper<T>, T>是对 IService 接口中方法的实现: 
+
+- 第1个泛型 M 指定继承了 BaseMapper接口的子接口 
+- 第2个泛型 T 指定实体类 注意：类上不要少了 @Service baseMapper 引用的就是 SysUserMapper 实例
+
+**注意**：
+
+类上不要少了 @Service 
+
+baseMapper 引用的就是 SysUserMapper 实例
+
+```java
+/**
+* ServiceImpl<M extends BaseMapper<T>, T> 是对 IService接口中方法的实现
+*     第1个泛型 M 指定继承了 BaseMapper接口的子接口
+*     第2个泛型 T 指定实体类
+* @Auther: 梦学谷 www.mengxuegu.com
+*/
+@Service
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
+    @Override
+    public SysUser findByUsername(String username) {
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", username);
+        // baseMapper 对应的是 SysUserMapper 实例
+        return baseMapper.selectOne(queryWrapper);
+	}
+}
+```
+
+单元测试类
+
+
+
+
+
+## 9.4 编码角色管理 SysRole
+
+
+
+## 9.5 编码权限管理 SysPermission
+
+## 9.6 数据库动态认证用户名密码
+
+## 9.7 数据库动态认证手机号
+
+## 9.8 重构UserDetailsService实现可复用
+
+
+
+
 
 # 10 RBAC 权限管理项目-权限资源管理
 
