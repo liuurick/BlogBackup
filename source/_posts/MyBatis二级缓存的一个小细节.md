@@ -1,7 +1,7 @@
 ---
 title: MyBatis二级缓存的一个小细节
 date: 2020-10-23 19:04:22
-tags: MyBatis缓存
+tags: MyBatis
 categories: [后端,数据库,ORM框架]
 ---
 

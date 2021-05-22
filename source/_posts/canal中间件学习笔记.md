@@ -1,8 +1,7 @@
 ---
 title: canal中间件学习笔记
 date: 2020-12-09 15:05:40
-tags: [ElasticSearch7,canal]
-categories: canal
+tags: canal
 ---
 
 es准时性索引的构建
@@ -26,13 +25,13 @@ es准时性索引的构建
 - target 为其他存储，比如 ElasticSearch；
 - Canal 借鉴了MySQL主从复制的原理，伪装成一个 MySQL 主库的备库，感知 MySQL 中 binlog 的变化，并同步出来一个结构化的数据，交给 Canal 管道的消费端；
 
-![img](C:\Users\admin\Desktop\blog\source\images\2020121201.png)
+![img](/images/2020121201.png)
 
 # 工作原理
 
 ## MySQL主备复制原理
 
-![img](C:\Users\admin\Desktop\blog\source\images\2020121202.png)
+![img](/images/2020121202.png)
 
 - MySQL master 将数据变更写入二进制日志( binary log, 其中记录叫做二进制日志事件binary log events，可以通过 show binlog events 进行查看)
 - MySQL slave 将 master 的 binary log events 拷贝到它的中继日志(relay log)
@@ -43,8 +42,6 @@ es准时性索引的构建
 - canal 模拟 MySQL slave 的交互协议，伪装自己为 MySQL slave ，向 MySQL master 发送dump 协议
 - MySQL master 收到 dump 请求，开始推送 binary log 给 slave (即 canal )
 - canal 解析 binary log 对象(原始为 byte 流)
-
-
 
 > canal快速启动：https://github.com/alibaba/canal/wiki/QuickStart
 
@@ -86,7 +83,7 @@ show variables like 'binlog_format';
 
 ###### 创建复制用户
 
-```csharp
+```sql
 create user 'canal'@'%' identified by 'canal';
 
 grant replication slave on *.* to 'canal'@'localhost';
@@ -119,7 +116,7 @@ flush privileges;
 
 修改如下：
 
-```undefined
+```properties
 canal.instance.mysql.slaveId=8
 
 canal.instance.dbUsername=canal
@@ -130,7 +127,7 @@ canal.instance.dbPassword=canal
 
 JDK 换成 8 才启动起来；
 
-```undefined
+```bash
 bin/startup.sh
 ```
 
@@ -189,8 +186,6 @@ pom.xml:
 
 - 文件路径：`/canal/1.1.4/canal-adapter-es7/conf/application.yml`；
 - 这个配置主要是指明管道两端的 MySQL 和 ElasticSearch；
-
-
 
 ```ruby
 server:
@@ -275,7 +270,7 @@ esMapping:
 
 因为canal是通过`log_bin`监听更新的
 
-```
+```bash
 show variables like '%log_bin%'
 ```
 
@@ -293,7 +288,7 @@ show variables like '%log_bin%'
 
 2.修改my.ini文件
 
-```
+```ini
 server_id=1 ###代表集群模式第一台机器
 binlog_format=ROW ###行模式
 log_bin=mysql_bin.log ###binlog的文件名称
@@ -305,11 +300,7 @@ max-binlog-size=500M ###最大存储500MB（可不配置）
 
 重启MySQL之后再次查询：
 
-![image-20201212190859514](C:\Users\admin\Desktop\blog\source\images\2020121203.png)
-
-
-
-
+![image-20201212190859514](/images/2020121203.png)
 
 ## 编译canal-adapter
 
@@ -317,13 +308,13 @@ max-binlog-size=500M ###最大存储500MB（可不配置）
 
 **ESAdapter类中的类型错误**
 
-```
+```java
 long rowCount = response.getHits().getTotalHits().value;
 ```
 
 **ESConnection**
 
-```
+```java
 public BulkResponse bulk() {
             if (mode == ESClientMode.TRANSPORT) {
                 return bulkRequestBuilder.execute().actionGet();
@@ -343,7 +334,7 @@ public BulkResponse bulk() {
 
 1.修改conf文件
 
-```
+```yml
 srcDataSources:
     defaultDS:
     url: jdbc:mysql://127.0.0.1:3306/dianpingdb?useUnicode=true
@@ -353,7 +344,7 @@ srcDataSources:
 
 
 
-```
+```yml
 - name: es
         hosts: 127.0.0.1:9300 # 127.0.0.1:9200 for rest mode
         properties:
@@ -362,13 +353,11 @@ srcDataSources:
           cluster.name: elasticsearch
 ```
 
-
-
 2.修改es目录下的文件
 
 创建shop.yml文件
 
-```
+```yml
 dataSourceKey: defaultDS
 destination: example
 groupId: 

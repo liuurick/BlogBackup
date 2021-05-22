@@ -67,9 +67,9 @@ public static void fileMethod(String path) {
 
 
 
+# 4 字符流操作
 
-
-# 4 对象操作
+# 5 对象操作
 
 > 对象的序列化:https://liuyangjun.blog.csdn.net/article/details/80422143
 
@@ -77,13 +77,13 @@ public static void fileMethod(String path) {
 
 
 
-# 5 网络操作
+# 6 网络操作
 
 
 
 
 
-# 6 新的输入/输出（NIO）
+# 7 新的输入/输出（NIO）
 
 > https://www.zhihu.com/question/29005375
 
