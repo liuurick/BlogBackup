@@ -21,16 +21,6 @@ Linux各种版本安装配置
 
 
 
-
-
-# 软件安装
-
-## 安装配置Java
-
-> https://www.cnblogs.com/stulzq/p/9286878.html
-
-
-
 # Linux常见操作
 
 ## linux磁盘分区扩容

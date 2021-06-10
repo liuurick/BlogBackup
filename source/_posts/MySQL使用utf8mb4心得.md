@@ -2,7 +2,7 @@
 title: MySQL使用utf8mb4心得
 date: 2021-05-03 17:00:50
 tags: MySQL
-categories: MySQL
+categories: [编程基础,MySQL]
 ---
 
 [TOC]

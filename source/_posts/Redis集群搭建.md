@@ -126,7 +126,7 @@ PS：当出现集群无法启动时，删除redis的临时数据文件，再次�
 
 借助redis的java客户端jedis可以操作以上集群，引用jedis版本的maven坐标如下：
 
-```
+```xml
 <dependency>
     <groupId>redis.clients</groupId>
     <artifactId>jedis</artifactId>
@@ -136,7 +136,7 @@ PS：当出现集群无法启动时，删除redis的临时数据文件，再次�
 
 Java编写访问redis集群的代码非常简单，如下所示：
 
-```
+```java
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
