@@ -94,7 +94,11 @@ logback.xml
 
 >Logback配置与使用：https://liuurick.github.io/2018/10/31/Logback%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BD%BF%E7%94%A8/
 
+AOP+注解
 
+基于数据库Binlog
+
+ELK日志系统
 
 # 4 整合高级功能
 

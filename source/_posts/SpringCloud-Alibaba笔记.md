@@ -13,7 +13,6 @@ categories: [后端,分布式/微服务]
 >
 > 开源网址：https://github.com/alibaba/spring-cloud-alibaba
 >
-> SpringCloud Alibaba学习总结：http://dreamphp.cn/blog/detail?blog_id=25468
 
 ![img](/images/2021042701.png)
 

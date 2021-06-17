@@ -85,24 +85,26 @@ Redis作为一个nosql，拥有非常多的优点：
 
 ### KEYS
 
-![这里写图片描述](https://img-blog.csdn.net/20180729000353251?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pwY2FuZHpoag==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+keys命令一般不再生产环境使用
+
+![这里写图片描述](/images/2021061501.png)
 
 ### EXISTS
 
-![这里写图片描述](https://img-blog.csdn.net/20180729000401883?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pwY2FuZHpoag==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+![这里写图片描述](/images/2021061502.png)
 
 ### DEL
 
-![这里写图片描述](https://img-blog.csdn.net/20180729000413138?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pwY2FuZHpoag==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+![这里写图片描述](/images/2021061503.png)
 
 ### TYPE
 
-![这里写图片描述](https://img-blog.csdn.net/20180729000419615?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pwY2FuZHpoag==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+![这里写图片描述](/images/2021061504.png)
 
 ### HELP
 
 HELP 空格 tab键
-![这里写图片描述](https://img-blog.csdn.net/20180729000426124?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pwY2FuZHpoag==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+![这里写图片描述](/images/2021061505.png)
 
 
 
@@ -110,21 +112,34 @@ HELP 空格 tab键
 
 # 3 API的理解和使用
 
-全面介绍了Redis提供的5种数据结构字符串（string）、哈希（hash）、列表（list）、集合（set）、有序集合（zset）的数据模型、常用命令、典型应用场景。同时本章还会对Redis的单线程处理机制、键值管理做一个全面介绍，通过对这些原理的理解，听众可以在合适的应用场景选择合适的数据结构。 ...
+全面介绍Redis提供的5种数据结构字符串（string）、哈希（hash）、列表（list）、集合（set）、有序集合（zset）的数据模型、常用命令、典型应用场景。同时本章还会对Redis的单线程处理机制、键值管理做一个全面介绍，通过对这些原理的理解，听众可以在合适的应用场景选择合适的数据结构。 ...
 
-共 11 节 (101分钟)
-收起列表
-2-1 -课程目录 (01:22)
-2-2 -通用命令 (12:46)
-2-3 数据结构和内部编码 (03:21)
-2-4 单线程 (04:48)
-2-5 字符串 (20:23)
-2-6 hash (1) (06:01)
-2-7 hash (2) (10:48)
-2-8 list(1) (02:45)
-2-9 list(2) (10:33)
-2-10 set (10:27)
-2-11 zset (16:55)
+## 3.1 数据结构和内部编码 
+
+![image-20210615214817775](/images/2021061514.png)
+
+## 3.2 单线程 
+
+redis在一个段时间内只会执行一个线程
+
+> Redis为什么会使用单线程？单线程为什么这么快？
+>
+> 1.纯内存
+>
+> 2.非阻塞IO
+>
+> 3.不免线程切换和竞态切换
+
+## 3.3 string
+
+## 3.4 hash
+
+## 3.5 list
+
+## 3.6 set 
+## 3.7 zset
+
+
 
 
 
@@ -135,15 +150,11 @@ HELP 空格 tab键
 
 ## 4.1 Jedis的使用
 
-
-
-
-
 ## 4.2 Spring项目集成Redis
 
 ## 4.3 SpringBoot项目集成Redis
 
-pom依赖导入
+### 1.pom依赖导入
 
 ```xml
 <dependency>
@@ -152,11 +163,7 @@ pom依赖导入
 </dependency>
 ```
 
-
-
-
-
-单服务器配置：
+### 2.单服务器配置：
 
 properties：
 
@@ -177,21 +184,248 @@ spring.redis.timeout=2000
 yml
 
 ```yml
-spring:
   redis:
-    host: 127.0.0.1
-    port: 6379
-    password: abc123456
-    timeout: 10000
-    lettuce:
+    host: localhost # Redis服务器地址
+    database: 0 # Redis数据库索引（默认为0）
+    port: 6379 # Redis服务器连接端口
+    password: # Redis服务器连接密码（默认为空）
+    jedis:
       pool:
-        max-active: 8
-        max-wait: -1ms
-        min-idle: 0
-        max-idle: 8
+        max-active: 8 # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1ms # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 8 # 连接池中的最大空闲连接
+        min-idle: 0 # 连接池中的最小空闲连接
+    timeout: 3000ms # 连接超时时间（毫秒）
+
 ```
 
+### 3.在根节点下添加Redis自定义key的配置
 
+```yml
+# 自定义redis key
+redis:
+  key:
+    prefix:
+      authCode: "portal:authCode:"
+    expire:
+      authCode: 120 # 验证码超期时间
+```
+
+### 4.添加RedisService接口用于定义一些常用Redis操作
+
+```java
+/**
+ * redis操作Service,
+ * 对象和数组都以json形式进行存储
+ */
+public interface RedisService {
+    /**
+     * 存储数据
+     */
+    void set(String key, String value);
+
+    /**
+     * 获取数据
+     */
+    String get(String key);
+
+    /**
+     * 设置超期时间
+     */
+    boolean expire(String key, long expire);
+
+    /**
+     * 删除数据
+     */
+    void remove(String key);
+
+    /**
+     * 自增操作
+     * @param delta 自增步长
+     */
+    Long increment(String key, long delta);
+
+}
+```
+
+### 5.注入StringRedisTemplate，实现RedisService接口
+
+```java
+import com.macro.mall.tiny.service.RedisService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
+
+/**
+ * redis操作Service的实现类
+ */
+@Service
+public class RedisServiceImpl implements RedisService {
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Override
+    public void set(String key, String value) {
+        stringRedisTemplate.opsForValue().set(key, value);
+    }
+
+    @Override
+    public String get(String key) {
+        return stringRedisTemplate.opsForValue().get(key);
+    }
+
+    @Override
+    public boolean expire(String key, long expire) {
+        return stringRedisTemplate.expire(key, expire, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void remove(String key) {
+        stringRedisTemplate.delete(key);
+    }
+
+    @Override
+    public Long increment(String key, long delta) {
+        return stringRedisTemplate.opsForValue().increment(key,delta);
+    }
+}
+```
+
+### 6.添加UmsMemberController
+
+> 添加根据电话号码获取验证码的接口和校验验证码的接口
+
+```java
+package com.macro.mall.tiny.controller;
+
+import com.macro.mall.tiny.common.api.CommonResult;
+import com.macro.mall.tiny.service.UmsMemberService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+/**
+ * 会员登录注册管理Controller
+ */
+@Controller
+@Api(tags = "UmsMemberController", description = "会员登录注册管理")
+@RequestMapping("/sso")
+public class UmsMemberController {
+    @Autowired
+    private UmsMemberService memberService;
+
+    @ApiOperation("获取验证码")
+    @RequestMapping(value = "/getAuthCode", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult getAuthCode(@RequestParam String telephone) {
+        return memberService.generateAuthCode(telephone);
+    }
+
+    @ApiOperation("判断验证码是否正确")
+    @RequestMapping(value = "/verifyAuthCode", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updatePassword(@RequestParam String telephone,
+                                 @RequestParam String authCode) {
+        return memberService.verifyAuthCode(telephone,authCode);
+    }
+}
+Copy to clipboardErrorCopied
+```
+
+### 7.添加UmsMemberService接口
+
+```java
+package com.macro.mall.tiny.service;
+
+import com.macro.mall.tiny.common.api.CommonResult;
+
+/**
+ * 会员管理Service
+ * Created by macro on 2018/8/3.
+ */
+public interface UmsMemberService {
+
+    /**
+     * 生成验证码
+     */
+    CommonResult generateAuthCode(String telephone);
+
+    /**
+     * 判断验证码和手机号码是否匹配
+     */
+    CommonResult verifyAuthCode(String telephone, String authCode);
+
+}
+Copy to clipboardErrorCopied
+```
+
+### 8.添加UmsMemberService接口的实现类
+
+> 生成验证码时，将自定义的Redis键值加上手机号生成一个Redis的key,以验证码为value存入到Redis中，并设置过期时间为自己配置的时间（这里为120s）。校验验证码时根据手机号码来获取Redis里面存储的验证码，并与传入的验证码进行比对。
+
+```java
+package com.macro.mall.tiny.service.impl;
+
+import com.macro.mall.tiny.common.api.CommonResult;
+import com.macro.mall.tiny.service.RedisService;
+import com.macro.mall.tiny.service.UmsMemberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Random;
+
+/**
+ * 会员管理Service实现类
+ */
+@Service
+public class UmsMemberServiceImpl implements UmsMemberService {
+    @Autowired
+    private RedisService redisService;
+    @Value("${redis.key.prefix.authCode}")
+    private String REDIS_KEY_PREFIX_AUTH_CODE;
+    @Value("${redis.key.expire.authCode}")
+    private Long AUTH_CODE_EXPIRE_SECONDS;
+
+    @Override
+    public CommonResult generateAuthCode(String telephone) {
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            sb.append(random.nextInt(10));
+        }
+        //验证码绑定手机号并存储到redis
+        redisService.set(REDIS_KEY_PREFIX_AUTH_CODE + telephone, sb.toString());
+        redisService.expire(REDIS_KEY_PREFIX_AUTH_CODE + telephone, AUTH_CODE_EXPIRE_SECONDS);
+        return CommonResult.success(sb.toString(), "获取验证码成功");
+    }
+
+
+    //对输入的验证码进行校验
+    @Override
+    public CommonResult verifyAuthCode(String telephone, String authCode) {
+        if (StringUtils.isEmpty(authCode)) {
+            return CommonResult.failed("请输入验证码");
+        }
+        String realAuthCode = redisService.get(REDIS_KEY_PREFIX_AUTH_CODE + telephone);
+        boolean result = authCode.equals(realAuthCode);
+        if (result) {
+            return CommonResult.success(null, "验证码校验成功");
+        } else {
+            return CommonResult.failed("验证码不正确");
+        }
+    }
+
+}
+```
 
 ## 4.4 Jedis配置优化
 
@@ -200,96 +434,19 @@ spring:
 # 5 Redis其他功能
 除了5种数据结构外，Redis还提供了诸如慢查询、Pipeline、Bitmap、HyperLogLog、发布订阅、GEO等附加功能，在这些功能的帮助下，Redis的应用场景更加丰富。
 
-共 7 节 (53分钟)
-收起列表
-4-1 课程目录 (01:03)
-4-2 慢查询 (09:49)
-4-3 pipeline (08:58)
-4-4 发布订阅 (07:12)
-4-5 bitmap (11:25)
-4-6 hyperloglog (07:54)
-4-7 geo (06:15)
+
 
 # 6 Redis持久化的取舍和选择
-Redis的持久化功能有效避免因进程退出造成的数据丢失问题，本章将介绍介绍RDB和AOF两种持久化配置和运行流程，以及选择策略
-
-共 9 节 (63分钟)
-收起列表
-5-1 目录 (01:03)
-5-2 持久化的作用 (02:52)
-5-3 RDB(1) (08:16)
-5-4 RDB(2) (14:18)
-5-5 RDB(3) (03:46)
-5-6 AOF(1) (08:10)
-5-7 AOF(2) (10:37)
-5-8 AOF实验 (04:54)
-5-9 RDB和AOF抉择 (08:05)
+- AOF
+- RDB
 
 # 7 常见的持久化开发运维问题
-本章探讨了常见的持久化问题进行定位和优化，最后结合Redis常见的单机多实例部署场景进行优化
 
-共 4 节 (13分钟)
-收起列表
-6-1 常见问题目录 (00:43)
-6-2 fork (03:37)
-6-3 子进程开销和优化 (04:57)
-6-4 AOF阻塞 (02:44)
 
 # 8 Redis复制的原理与优化
-复制是实现高可用的基石，但复制同样是运维的痛点，本部分详细分析复制的原理，讲解运维过程中可能遇到的问题。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-共 9 节 (59分钟)
-收起列表
-7-1 目录 (01:13)
-7-2 什么是主从复制 (05:49)
-7-3 主从复制配置-介绍 (05:07)
-7-4 主从复制配置-操作 (13:13)
-7-5 runid和复制偏移量 (04:06)
-7-6 全量复制 (03:22)
-7-7 全量复制开销 + 部分复制 (03:48)
-7-8 故障处理 (05:49)
-7-9 主从复制常见问题 (15:29)
-
-
+Redis主从复制
 
 # 9 Redis Sentinel
-本章将一步步解析Redis Sentinel的相关概念、安装部署、配置、客户端路由、原理解析，最后分析了Redis Sentinel运维中的一些问题。
-收起列表
-8-1 sentinel-目录 (01:06)
-8-2 主从复制高可用？ (03:57)
-8-3 redis sentinel架构 (04:44)
-8-4 redis sentinel安装与配置 (06:24)
-8-5 redis sentinel安装演示-1 (03:32)
-8-6 redis sentinel安装演示-2 (09:44)
-8-7 java客户端 (06:42)
-8-8 python客户端 (01:19)
-8-9 实现原理-1-故障转移演练 (08:19)
-8-10 实现原理-2.故障转移演练(客户端) (03:58)
-8-11 实现原理-3.故障演练(日志分析) (06:48)
-8-12 三个定时任务 (05:34)
-8-13 主观下线和客观下线 (04:48)
-8-14 领导者选举 (04:06)
-8-15 故障转移 (05:52)
-8-16 常见开发运维问题-目录 (00:33)
-8-17 节点运维 (05:20)
-8-18 高可用读写分离 (09:26)
-8-19 本章总结 (04:32)
 # 10 Redis Cluster
 > https://liuurick.github.io/2020/07/30/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/
 
@@ -297,31 +454,95 @@ Redis的持久化功能有效避免因进程退出造成的数据丢失问题，
 
 # 11 缓存设计与优化
 
-讲解将缓存加入应用架构后带来的一些问题，这些问题常常会成为应用的致命点。
+## 11.1 缓存击穿
 
-共 9 节 (65分钟)
-收起列表
-11-1 目录 (01:25)
-11-2 缓存的受益和成本 (06:36)
-11-3 缓存的更新策略 (07:09)
-11-4 缓存粒度问题 (05:14)
-11-5 缓存穿透问题 (12:30)
-11-6 缓存雪崩优化 (09:53)
-试看
-11-7 无底洞问题 (07:32)
-11-8 热点key的重建优化 (11:45)
-11-9 本章总结 (02:41)
+概念
+
+key对应的数据存在，但在redis中过期，此时若有大量并发请求过来，这些请求发现缓存过期一般都会从后端DB加载数据并回设到缓存，这个时候大并发的请求会瞬间把后端DB压垮。
+
+特点：超热点key的数量很少，例如“爆款”商品，可以提取预知
+
+![image-20210611093028050](/images/2021061506.png)
+
+解决方案：
+
+- 使用互斥锁（mutex key）
+- 设置key永不过期（update的情况下删除缓存）
+
+
+
+## 11.2 缓存穿透
+
+用户想要查询一个数据，发现redis中没有，也就是缓存没有命中，于是向持久层数据库查询。发现也没有，于是本次查询失败。当高并发时，缓存都没有命中，于是都去请求数据库。这会给数据库造成很大的压力，甚至宕机，这时候叫做出现了缓存穿透。
+
+**缓存击穿与缓存穿透的区别**
+
+缓存击穿，是指一个key非常热点，在不停的扛着大并发，大并发集中对这一个点进行访问，当这个key在失效的瞬间，持续的大并发就穿破缓存，直接请求数据库，就像在一个屏障上凿开了一个洞。而穿透是redis和数据库都没有改数据，比如黑客发起的攻击。
+
+
+
+解决方案
+
+- 布隆过滤器
+
+![image-20210611102421271](/images/2021061507.png)
+
+
+
+2 设置空值方案
+
+![image-20210611102438499](/images/2021061508.png)
+
+
+
+设置空值带来的问题
+
+如果空值能够被缓存起来，这就意味着缓存需要更多的空间存储更多的键，因为这当中可能会有更多的空值的键
+
+即使对空值设置了过期时间，还是会存在redis和DB的数据会有一段时间窗口的不一致，这对于需要保持一致性的业务会有影响（生效之后删除缓存）
+
+## 11.3 缓存雪崩
+
+缓存雪崩是指缓存层出现了错误，不能正常工作了。于是所有的请求都会达到存储层，存储层的调用量会暴增，造成存储层也会挂掉的情况。
+
+
+
+正常从Redis中获取
+
+![image-20210611102031182](/images/2021061509.png)
+
+缓存失效瞬间
+
+![image-20210611102314700](/images/2021061510.png)
+
+
+
+解决方案
+
+- redis高可用（集群）
+- 加随机因子（根据商品冷热程度）
+- 限流降级（已经发生雪崩的情况下，系统架构级别策略）
+- 加锁排队（同缓存击穿）
+
+
+
+## 11.4 数据库和Redis双写一致性策略
+
+> 如何保证 Redis 缓存与数据库双写一致性？https://mp.weixin.qq.com/s/5I4IQFYZDdeNulSZfEj79A
+
+1. 先更新数据库，后更新缓存
+2. 先更新数据库，后删除缓存
+3. 先更新缓存，后更新数据库
+4. 先删除缓存，后更新数据库
+
+## 分布式锁
+
+1. 基于关系数据库乐观锁 
+
+2. 基于 Redis 的分布式锁 
+3. 基于 ZooKeeper 的分布式锁
 
 # 12 Redis云平台CacheCloud
-本章结合前面的知识介绍redis规模化后使用云平台如何进行机器部署、应用接入、用户相关功能维护等问题
 
-共 7 节 (41分钟)
-收起列表
-12-1 _目录 (01:45)
-12-2 _Redis规模化困扰 (05:27)
-12-3 _快速构建 (05:25)
-12-4 机器部署 (08:22)
-12-5 应用接入 (13:34)
-12-6 用户功能 (02:58)
-12-7 运维功能 (03:20)
+结合前面的知识介绍redis规模化后使用云平台如何进行机器部署、应用接入、用户相关功能维护等问题
 

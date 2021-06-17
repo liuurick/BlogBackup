@@ -14,25 +14,27 @@ Nacos（Dynamic Naming and Configuration Service ） 等价于  `注册中心`+`
 > 官方文档：https://github.com/alibaba/Nacos
 >
 > 下载地址：https://github.com/alibaba/nacos/releases/tag/1.1.4
+>
+> 学习地址：https://www.fangzhipeng.com/springcloud/2019/05/30/sc-nacos-discovery.html
 
 # 1 Docker安装启动Nacos
 
 ## 1.1 拉取镜像
 
-```
+```bash
 docker pull nacos/nacos-server
 ```
 
 ## 1.2 创建本地的映射文件 custom.properties
 
-```
+```bash
 mkdir -p /root/nacos/init.d /root/nacos/logs
 vim /root/nacos/init.d/custom.properties
 ```
 
 在文件中写入以下配置
 
-```
+```bash
 management.endpoints.web.exposure.include=*
 ```
 
